@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+     Copyright (C) 2016 The CyanogenMod Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources>
+    <string name="app_name">Designer Tools</string>
+
+    <string name="header_title_grid_overlay">Grid overlay</string>
+    <string name="header_summary_grid_overlay">On-screen grids help you check your layouts for misaligned elements and inconsistent spacing across your app. Cycle between 8dp, 4dp text baseline, and a custom size of your choice.</string>
+
+    <string name="header_title_mockup_overlay">Mockup overlay</string>
+    <string name="header_summary_mockup_overlay">Overlaying a mockup gives you a live preview of the screen layout as you’re working.</string>
+
+    <string name="header_title_color_picker">Color picker</string>
+    <string name="header_summary_color_picker">Check on-screen colors at the pixel level by dragging the loupe dot around.</string>
+
+    <string name="header_title_screenshot">Screenshot details</string>
+    <string name="header_summary_screenshot">Append device information to every screenshot you take. Record device name, build details, screen specs, and more.</string>
+
+    <string name="qs_section_text">Quick settings tiles</string>
+    <string name="overlays_section_text">Overlays</string>
+    <string name="functions_section_text">Functions</string>
+
+    <string name="line_colors">Line colors</string>
+    <string name="include_keylines">Include keylines</string>
+    <string name="include_custom_grid_size">Include custom grid size</string>
+
+    <string name="current_mockup">Current mockup:</string>
+    <string name="portrait">Portait</string>
+    <string name="landscape">Landscape</string>
+    <string name="reset_mokcups">Reset mockups</string>
+    <string name="opacity_format">%d %% Opacity</string>
+
+    <!-- Quick setting tile labels -->
+    <string name="grid_qs_tile_label">Grid</string>
+    <string name="mock_qs_tile_label">Mock overlay</string>
+    <string name="screenshot_qs_tile_label">Screenshot</string>
+    <string name="color_picker_qs_tile_label">Color picker</string>
+
+    <string name="color_picker_accept">Accept</string>
+    <string name="color_picker_cancel">Cancel</string>
+    <string name="color_picker_title">Grid and keyline colors</string>
+
+    <string name="color_picker_grid_page_title">Grid</string>
+    <string name="color_picker_keyline_page_title">Keyline</string>
+
+    <!-- Screenshot info strings -->
+    <string name="screenshot_info_title">Screenshot Info</string>
+    <string name="device_title">Device</string>
+    <string name="code_name_title">Code Name</string>
+    <string name="build_title">Build</string>
+    <string name="screen_size_title">Screen Size</string>
+    <string name="screen_density_title">Screen Density</string>
+
+    <string name="notif_content_hide_picker">Press to hide color picker</string>
+    <string name="notif_content_show_picker">Press to show color picker</string>
+
+    <string name="notif_content_hide_grid_overlay">Press to hide grid</string>
+    <string name="notif_content_show_grid_overlay">Press to show grid</string>
+
+    <string name="notif_content_hide_mock_overlay">Press to hide mockup</string>
+    <string name="notif_content_show_mock_overlay">Press to show mockup</string>
+
+    <string name="notif_content_screenshot_info">Screenshot info enabled</string>
+
+    <string name="color_copied_to_clipboard">Color value copied to clipboard</string>
+
+</resources>

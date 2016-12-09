@@ -1,0 +1,151 @@
+package org.cyanogenmod.designertools.ui;
+
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.app.Activity;
+import android.os.Bundle;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.Interpolator;
+
+import org.cyanogenmod.designertools.R;
+
+public class CreditsActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        overridePendingTransition(0, 0);
+        setContentView(R.layout.activity_credits);
+        if (savedInstanceState == null) {
+        }
+    }
+
+    private void circularRevealActivity(View v) {
+
+        int cx = v.getWidth() / 2;
+        int cy = v.getHeight() / 2;
+
+        float finalRadius = Math.max(v.getWidth(), v.getHeight());
+
+        // create the animator for this view (the start radius is zero)
+        Animator circularReveal = ViewAnimationUtils
+                .createCircularReveal(v, cx, cy, 0, finalRadius);
+        circularReveal.setDuration(getResources().getInteger(
+                R.integer.credits_circular_reveal_duration));
+
+        // make the view visible and start the animation
+        v.setVisibility(View.VISIBLE);
+        circularReveal.setInterpolator(new AccelerateDecelerateInterpolator());
+        circularReveal.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                animateContent();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+            }
+        });
+        circularReveal.start();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final View rootLayout = findViewById(R.id.activity_credits);
+        rootLayout.setVisibility(View.INVISIBLE);
+
+        ViewTreeObserver viewTreeObserver = rootLayout.getViewTreeObserver();
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    circularRevealActivity(rootLayout);
+                    rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                }
+            });
+        }
+    }
+
+    private void animateContent() {
+        View avatar1 = findViewById(R.id.avatar1);
+        avatar1.setScaleX(0);
+        avatar1.setScaleY(0);
+        avatar1.setVisibility(View.VISIBLE);
+        View text1 = findViewById(R.id.text1);
+        text1.setAlpha(0);
+        text1.setVisibility(View.VISIBLE);
+        View avatar2 = findViewById(R.id.avatar2);
+        avatar2.setScaleX(0);
+        avatar2.setScaleY(0);
+        avatar2.setVisibility(View.VISIBLE);
+        View text2 = findViewById(R.id.text2);
+        text2.setAlpha(0);
+        text2.setVisibility(View.VISIBLE);
+        View avatar3 = findViewById(R.id.avatar3);
+        avatar3.setScaleX(0);
+        avatar3.setScaleY(0);
+        avatar3.setVisibility(View.VISIBLE);
+        View text3 = findViewById(R.id.text3);
+        text3.setAlpha(0);
+        text3.setVisibility(View.VISIBLE);
+        View avatar4 = findViewById(R.id.avatar4);
+        avatar4.setScaleX(0);
+        avatar4.setScaleY(0);
+        avatar4.setVisibility(View.VISIBLE);
+        View text4 = findViewById(R.id.text4);
+        text4.setAlpha(0);
+        text4.setVisibility(View.VISIBLE);
+
+        Interpolator interpolator = new FastOutSlowInInterpolator();
+        long duration = 375L;
+        long delay = duration / 3;
+
+        AnimatorSet anim1 = new AnimatorSet();
+        anim1.play(ObjectAnimator.ofFloat(avatar1, "scaleX", 1f))
+                .with(ObjectAnimator.ofFloat(avatar1, "scaleY", 1f))
+                .with(ObjectAnimator.ofFloat(text1, "alpha", 1f));
+        anim1.setDuration(duration);
+        anim1.setInterpolator(interpolator);
+        AnimatorSet anim2 = new AnimatorSet();
+        anim2.play(ObjectAnimator.ofFloat(avatar2, "scaleX", 1f))
+                .with(ObjectAnimator.ofFloat(avatar2, "scaleY", 1f))
+                .with(ObjectAnimator.ofFloat(text2, "alpha", 1f));
+        anim2.setDuration(duration);
+        anim2.setInterpolator(interpolator);
+        anim2.setStartDelay(delay);
+        AnimatorSet anim3 = new AnimatorSet();
+        anim3.play(ObjectAnimator.ofFloat(avatar3, "scaleX", 1f))
+                .with(ObjectAnimator.ofFloat(avatar3, "scaleY", 1f))
+                .with(ObjectAnimator.ofFloat(text3, "alpha", 1f));
+        anim3.setDuration(duration);
+        anim3.setInterpolator(interpolator);
+        anim3.setStartDelay(delay * 2);
+        AnimatorSet anim4 = new AnimatorSet();
+        anim4.play(ObjectAnimator.ofFloat(avatar4, "scaleX", 1f))
+                .with(ObjectAnimator.ofFloat(avatar4, "scaleY", 1f))
+                .with(ObjectAnimator.ofFloat(text4, "alpha", 1f));
+        anim4.setDuration(duration);
+        anim4.setInterpolator(interpolator);
+        anim4.setStartDelay(delay * 3);
+        AnimatorSet set = new AnimatorSet();
+        set.play(anim1).with(anim2);
+        set.play(anim2).with(anim3);
+        set.play(anim3).with(anim4);
+        set.start();
+    }
+}

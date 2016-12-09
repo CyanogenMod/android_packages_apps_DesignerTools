@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 The CyanogenMod Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#ffffff</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="textColorPrimary">#deffffff</color>
+    <color name="textColorSecondary">#8affffff</color>
+
+    <color name="colorGridOverlayCardTint">#536dfe</color>
+    <color name="colorGridOverlayAccent">#283593</color>
+
+    <color name="colorMockupOverlayCardTint">#2196f3</color>
+    <color name="colorMockupOverlayAccent">#0d47a1</color>
+    <color name="colorMockupPickImageStroke">#ffffff</color>
+    <color name="colorMockupPickImageFill">#800d47a1</color>
+    <color name="colorMockupPickImageAddIcon">#8affffff</color>
+
+    <color name="colorColorPickerCardTint">#0097a7</color>
+    <color name="colorColorPickerAccent">#006064</color>
+
+    <color name="colorScreenshotCardTint">#009688</color>
+    <color name="colorScreenshotAccent">#004d40</color>
+
+    <color name="dualColorPickerDefaultPrimaryColor">#ff3e51b5</color>
+    <color name="dualColorPickerDefaultSecondaryColor">#ff9c25b0</color>
+
+    <color name="creditsBackground">#f9f9f9</color>
+    <color name="screenshot_info_background_color">#263238</color>
+
+</resources>

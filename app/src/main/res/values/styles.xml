@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 The CyanogenMod Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+    </style>
+
+    <style name="AppTheme.Credits" >
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="AppTheme.GridOverlayCard">
+        <item name="android:colorAccent">@color/colorGridOverlayAccent</item>
+    </style>
+
+    <style name="AppTheme.MockupOverlayCard">
+        <item name="android:colorAccent">@color/colorMockupOverlayAccent</item>
+    </style>
+
+    <style name="AppTheme.ColorPickerCard">
+        <item name="android:colorAccent">@color/colorColorPickerAccent</item>
+    </style>
+
+    <style name="AppTheme.ScreenshotCard">
+        <item name="android:colorAccent">@color/colorScreenshotAccent</item>
+    </style>
+
+    <style name="AppDialog" parent="@android:style/Theme.Material.Light.Dialog.NoActionBar" />
+
+    <style name="ScreenshotInfoSubHeading">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">#a6a6a6</item>
+    </style>
+
+    <style name="ScreenshotInfoText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+
+    <style name="TransparentTheme" parent="@android:style/Theme.Translucent.NoTitleBar">
+
+    </style>
+
+    <declare-styleable name="DualColorPicker">
+        <attr name="primaryColor" format="reference|color"/>
+        <attr name="secondaryColor" format="reference|color"/>
+    </declare-styleable>
+
+</resources>
