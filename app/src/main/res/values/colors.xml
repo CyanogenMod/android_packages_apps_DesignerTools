@@ -37,8 +37,8 @@
     <color name="colorScreenshotCardTint">#009688</color>
     <color name="colorScreenshotAccent">#004d40</color>
 
-    <color name="dualColorPickerDefaultPrimaryColor">#ff3e51b5</color>
-    <color name="dualColorPickerDefaultSecondaryColor">#ff9c25b0</color>
+    <color name="dualColorPickerDefaultPrimaryColor">#803e51b5</color>
+    <color name="dualColorPickerDefaultSecondaryColor">#809c25b0</color>
 
     <color name="creditsBackground">#f9f9f9</color>
     <color name="screenshot_info_background_color">#263238</color>

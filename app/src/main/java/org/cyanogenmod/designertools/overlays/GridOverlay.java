@@ -142,25 +142,20 @@ public class GridOverlay extends Service {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (GridQuickSettingsTile.ACTION_UNPUBLISH.equals(action)) {
-                hideOverlay(new Runnable() {
-                    @Override
-                    public void run() {
-                        stopSelf();
-                    }
-                });
+                stopSelf();
             } else if (GridQuickSettingsTile.ACTION_TOGGLE_STATE.equals(action)) {
                 int state =
                         intent.getIntExtra(OnOffTileState.EXTRA_STATE, OnOffTileState.STATE_OFF);
                 if (state == OnOffTileState.STATE_ON) {
-                    hideOverlay(new Runnable() {
-                        @Override
-                        public void run() {
-                            stopSelf();
-                        }
-                    });
+                    stopSelf();
                 }
             } else if (ACTION_HIDE_OVERLAY.equals(action)) {
-                hideOverlay(null);
+                hideOverlay(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateNotification(false);
+                    }
+                });
             } else if (ACTION_SHOW_OVERLAY.equals(action)) {
                 showOverlay();
             }
@@ -178,17 +173,12 @@ public class GridOverlay extends Service {
             @Override
             public void run() {
                 removeViewIfAttached(mOverlayView);
-                updateNotification(false);
                 if (endAction != null) endAction.run();
             }
         });
     }
 
     static class GridOverlayView extends View {
-        private static final String KEY_GRID_ENABLED = "grid_increments";
-        private static final String KEY_KEYLINES_ENABLED = "keylines";
-        private static final String KEY_GRID_SIZE = "grid_step_size";
-
         private Paint mGridPaint;
         private Paint mKeylinePaint;
         private RectF mFirstKeylineRect;
@@ -232,8 +222,8 @@ public class GridOverlay extends Service {
             mVerticalMarker = context.getDrawable(R.drawable.ic_marker_vert);
 
             SharedPreferences prefs = PreferenceUtils.getShardedPreferences(context);
-            mShowGrid = prefs.getBoolean(KEY_GRID_ENABLED, false);
-            mShowKeylines = prefs.getBoolean(KEY_KEYLINES_ENABLED, false);
+            mShowGrid = PreferenceUtils.getShowGrid(context, false);
+            mShowKeylines = PreferenceUtils.getShowKeylines(context, false);
 
             boolean useCustom = PreferenceUtils.getUseCustomGridSize(getContext(),
                     false);
@@ -308,16 +298,16 @@ public class GridOverlay extends Service {
                     @Override
                     public void onSharedPreferenceChanged(SharedPreferences prefs,
                             String key) {
-                        if (KEY_GRID_ENABLED.equals(key)) {
+                        if (PreferenceUtils.KEY_SHOW_GRID.equals(key)) {
                             boolean enabled =
-                                    prefs.getBoolean(KEY_GRID_ENABLED, false);
+                                    prefs.getBoolean(PreferenceUtils.KEY_SHOW_GRID, false);
                             if (mShowGrid != enabled) {
                                 mShowGrid = enabled;
                                 invalidate();
                             }
-                        } else if (KEY_KEYLINES_ENABLED.equals(key)) {
+                        } else if (PreferenceUtils.KEY_SHOW_KEYLINES.equals(key)) {
                             boolean enabled =
-                                    prefs.getBoolean(KEY_KEYLINES_ENABLED, false);
+                                    prefs.getBoolean(PreferenceUtils.KEY_SHOW_KEYLINES, false);
                             if (enabled != mShowKeylines) {
                                 mShowKeylines = enabled;
                                 invalidate();
@@ -380,16 +370,17 @@ public class GridOverlay extends Service {
         private void drawKeylines(Canvas canvas) {
             final int height = getHeight();
 
+            int alpha = mKeylinePaint.getAlpha();
             // draw rects first
-            mKeylinePaint.setAlpha((int) (0.25f * 255));
+            mKeylinePaint.setAlpha((int) (0.5f * alpha));
             canvas.drawRect(mFirstKeylineRect, mKeylinePaint);
             canvas.drawRect(mSecondKeylineRect, mKeylinePaint);
             canvas.drawRect(mThirdKeylineRect, mKeylinePaint);
 
             // draw lines next
+            mKeylinePaint.setAlpha(alpha);
             float stroke = mKeylinePaint.getStrokeWidth();
             mKeylinePaint.setStrokeWidth(mKeylineWidth);
-            mKeylinePaint.setAlpha(255);
             canvas.drawLine(mFirstKeylineRect.right, 0, mFirstKeylineRect.right, height,
                     mKeylinePaint);
             canvas.drawLine(mSecondKeylineRect.right, 0, mSecondKeylineRect.right, height,
@@ -400,7 +391,6 @@ public class GridOverlay extends Service {
         }
 
         private void drawKeylineMarkers(Canvas canvas) {
-            mKeylinePaint.setAlpha(255);
             mHorizontalMarkerLeft.setTint(mKeylinePaint.getColor());
             mHorizontalMarkerLeft.setBounds(mFirstKeylineMarkerBounds);
             mHorizontalMarkerLeft.draw(canvas);
