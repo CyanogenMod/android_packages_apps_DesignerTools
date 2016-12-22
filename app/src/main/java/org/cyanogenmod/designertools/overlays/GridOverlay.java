@@ -70,12 +70,8 @@ public class GridOverlay extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (mOverlayView != null) {
-            hideOverlay(new Runnable() {
-                @Override
-                public void run() {
-                    mOverlayView = null;
-                }
-            });
+            removeViewIfAttached(mOverlayView);
+            mOverlayView = null;
         }
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
@@ -87,7 +83,7 @@ public class GridOverlay extends Service {
     private void setup() {
         mParams = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_TOAST,
+                WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT);
         mOverlayView = new GridOverlayView(this);
@@ -172,6 +168,7 @@ public class GridOverlay extends Service {
         mOverlayView.animate().alpha(0f).withEndAction(new Runnable() {
             @Override
             public void run() {
+                mOverlayView.setAlpha(0f);
                 removeViewIfAttached(mOverlayView);
                 if (endAction != null) endAction.run();
             }

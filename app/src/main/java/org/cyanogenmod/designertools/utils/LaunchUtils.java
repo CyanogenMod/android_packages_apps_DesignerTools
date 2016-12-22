@@ -28,6 +28,7 @@ import org.cyanogenmod.designertools.qs.ColorPickerQuickSettingsTile;
 import org.cyanogenmod.designertools.qs.GridQuickSettingsTile;
 import org.cyanogenmod.designertools.qs.MockQuickSettingsTile;
 import org.cyanogenmod.designertools.ui.ScreenRecordRequestActivity;
+import org.cyanogenmod.designertools.ui.StartOverlayActivity;
 
 public class LaunchUtils {
     public static boolean isCyanogenMod(Context context) {
@@ -38,10 +39,7 @@ public class LaunchUtils {
         if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             GridQuickSettingsTile.publishGridTile(context, state);
         } else {
-            Intent newIntent = new Intent(context, GridOverlay.class);
-            context.startService(newIntent);
-            PreferenceUtils.setGridOverlayActive(context, true);
-            PreferenceUtils.setGridQsTileEnabled(context, true);
+            startOverlayActivity(context, StartOverlayActivity.GRID_OVERLAY);
         }
     }
 
@@ -60,10 +58,7 @@ public class LaunchUtils {
         if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             MockQuickSettingsTile.publishMockTile(context, state);
         } else {
-            Intent newIntent = new Intent(context, MockOverlay.class);
-            context.startService(newIntent);
-            PreferenceUtils.setMockOverlayActive(context, true);
-            PreferenceUtils.setMockQsTileEnabled(context, true);
+            startOverlayActivity(context, StartOverlayActivity.MOCK_OVERLAY);
         }
     }
 
@@ -82,7 +77,7 @@ public class LaunchUtils {
         if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             ColorPickerQuickSettingsTile.publishColorPickerTile(context, state);
         } else {
-            startColorPickerOrRequestPermission(context);
+            startOverlayActivity(context, StartOverlayActivity.COLOR_PICKER_OVERLAY);
         }
     }
 
@@ -97,7 +92,7 @@ public class LaunchUtils {
         }
     }
 
-    private static void startColorPickerOrRequestPermission(Context context) {
+    public static void startColorPickerOrRequestPermission(Context context) {
         DesignerToolsApplication app =
                 (DesignerToolsApplication) context.getApplicationContext();
         if (app.getScreenRecordResultCode() == Activity.RESULT_OK && app.getScreenRecordResultData() != null) {
@@ -110,5 +105,12 @@ public class LaunchUtils {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         }
+    }
+
+    private static void startOverlayActivity(Context context, int overlayType) {
+        Intent intent = new Intent(context, StartOverlayActivity.class);
+        intent.putExtra(StartOverlayActivity.EXTRA_OVERLAY_TYPE, overlayType);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 }
