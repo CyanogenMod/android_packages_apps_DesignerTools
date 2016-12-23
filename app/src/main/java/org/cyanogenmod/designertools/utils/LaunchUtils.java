@@ -35,60 +35,109 @@ public class LaunchUtils {
         return context.getPackageManager().hasSystemFeature("org.cyanogenmod.theme");
     }
 
+    public static void publishGridOverlayTile(Context context, int state) {
+        GridQuickSettingsTile.publishGridTile(context, state);
+    }
+
+    public static void launchGridOverlay(Context context) {
+        startOverlayActivity(context, StartOverlayActivity.GRID_OVERLAY);
+    }
+
     public static void lauchGridOverlayOrPublishTile(Context context, int state) {
         if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            GridQuickSettingsTile.publishGridTile(context, state);
+            publishGridOverlayTile(context, state);
         } else {
-            startOverlayActivity(context, StartOverlayActivity.GRID_OVERLAY);
+            launchGridOverlay(context);
         }
+    }
+
+    public static void unpublishGridOverlayTile(Context context) {
+        GridQuickSettingsTile.unpublishGridTile(context);
+    }
+
+    public static void cancelGridOverlay(Context context) {
+        Intent newIntent = new Intent(context, GridOverlay.class);
+        context.stopService(newIntent);
+        PreferenceUtils.setGridOverlayActive(context, false);
+        PreferenceUtils.setGridQsTileEnabled(context, false);
     }
 
     public static void cancelGridOverlayOrUnpublishTile(Context context) {
         if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            unpublishGridOverlayTile(context);
             GridQuickSettingsTile.unpublishGridTile(context);
         } else {
-            Intent newIntent = new Intent(context, GridOverlay.class);
-            context.stopService(newIntent);
-            PreferenceUtils.setGridOverlayActive(context, false);
-            PreferenceUtils.setGridQsTileEnabled(context, false);
+            cancelGridOverlay(context);
         }
+    }
+
+    public static void publishMockOverlayTile(Context context, int state) {
+        MockQuickSettingsTile.publishMockTile(context, state);
+    }
+
+    public static void launchMockOverlay(Context context) {
+        startOverlayActivity(context, StartOverlayActivity.MOCK_OVERLAY);
     }
 
     public static void lauchMockPverlayOrPublishTile(Context context, int state) {
         if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            MockQuickSettingsTile.publishMockTile(context, state);
+            publishMockOverlayTile(context, state);
         } else {
-            startOverlayActivity(context, StartOverlayActivity.MOCK_OVERLAY);
+            launchMockOverlay(context);
         }
+    }
+
+    public static void unpublishMockOverlayTile(Context context) {
+        MockQuickSettingsTile.unpublishMockTile(context);
+    }
+
+    public static void cancelMockOverlay(Context context) {
+        Intent newIntent = new Intent(context, MockOverlay.class);
+        context.stopService(newIntent);
+        PreferenceUtils.setMockOverlayActive(context, false);
+        PreferenceUtils.setMockQsTileEnabled(context, false);
     }
 
     public static void cancelMockOverlayOrUnpublishTile(Context context) {
         if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            MockQuickSettingsTile.unpublishMockTile(context);
+            unpublishMockOverlayTile(context);
         } else {
-            Intent newIntent = new Intent(context, MockOverlay.class);
-            context.stopService(newIntent);
-            PreferenceUtils.setMockOverlayActive(context, false);
-            PreferenceUtils.setMockQsTileEnabled(context, false);
+            cancelMockOverlay(context);
         }
+    }
+
+    public static void publishColorPickerTile(Context context, int state) {
+        ColorPickerQuickSettingsTile.publishColorPickerTile(context, state);
+    }
+
+    public static void launchColorPickerOverlay(Context context) {
+        startOverlayActivity(context, StartOverlayActivity.COLOR_PICKER_OVERLAY);
     }
 
     public static void lauchColorPickerOrPublishTile(Context context, int state) {
         if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            ColorPickerQuickSettingsTile.publishColorPickerTile(context, state);
+            publishColorPickerTile(context, state);
         } else {
-            startOverlayActivity(context, StartOverlayActivity.COLOR_PICKER_OVERLAY);
+            launchColorPickerOverlay(context);
         }
+    }
+
+    public static void unpublishColorPickerTile(Context context) {
+        ColorPickerQuickSettingsTile.unpublishColorPickerTile(context);
+    }
+
+    public static void cancelColorPickerOverlay(Context context) {
+        Intent newIntent = new Intent(context, ColorPickerOverlay.class);
+        context.stopService(newIntent);
+        PreferenceUtils.setColorPickerActive(context, false);
+        PreferenceUtils.setColorPickerQsTileEnabled(context, false);
     }
 
     public static void cancelColorPickerOrUnpublishTile(Context context) {
         if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            ColorPickerQuickSettingsTile.unpublishColorPickerTile(context);
+            unpublishColorPickerTile(context);
         } else {
-            Intent newIntent = new Intent(context, ColorPickerOverlay.class);
-            context.stopService(newIntent);
-            PreferenceUtils.setColorPickerActive(context, false);
-            PreferenceUtils.setColorPickerQsTileEnabled(context, false);
+            cancelColorPickerOverlay(context);
         }
     }
 

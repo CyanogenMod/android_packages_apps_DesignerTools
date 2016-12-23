@@ -22,6 +22,7 @@ import android.content.Intent;
 
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.overlays.MockOverlay;
+import org.cyanogenmod.designertools.utils.LaunchUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
 
 import cyanogenmod.app.CMStatusBarManager;
@@ -70,13 +71,11 @@ public class MockQuickSettingsTile {
         public void onReceive(Context context, Intent intent) {
             int state = intent.getIntExtra(OnOffTileState.EXTRA_STATE, OnOffTileState.STATE_OFF);
             if (state == OnOffTileState.STATE_OFF) {
-                publishMockTile(context, OnOffTileState.STATE_ON);
-                Intent newIntent = new Intent(context, MockOverlay.class);
-                context.startService(newIntent);
-                PreferenceUtils.setMockOverlayActive(context, true);
+                LaunchUtils.publishMockOverlayTile(context, OnOffTileState.STATE_ON);
+                LaunchUtils.launchMockOverlay(context);
             } else {
-                publishMockTile(context, OnOffTileState.STATE_OFF);
-                PreferenceUtils.setMockOverlayActive(context, false);
+                LaunchUtils.publishMockOverlayTile(context, OnOffTileState.STATE_OFF);
+                LaunchUtils.cancelMockOverlay(context);
             }
         }
     }

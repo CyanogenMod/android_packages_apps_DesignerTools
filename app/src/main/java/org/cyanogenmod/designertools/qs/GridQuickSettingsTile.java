@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.cyanogenmod.designertools.R;
-import org.cyanogenmod.designertools.overlays.GridOverlay;
+import org.cyanogenmod.designertools.utils.LaunchUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
 
 import cyanogenmod.app.CMStatusBarManager;
@@ -70,13 +70,11 @@ public class GridQuickSettingsTile {
         public void onReceive(Context context, Intent intent) {
             int state = intent.getIntExtra(OnOffTileState.EXTRA_STATE, OnOffTileState.STATE_OFF);
             if (state == OnOffTileState.STATE_OFF) {
-                publishGridTile(context, OnOffTileState.STATE_ON);
-                Intent newIntent = new Intent(context, GridOverlay.class);
-                context.startService(newIntent);
-                PreferenceUtils.setGridOverlayActive(context, true);
+                LaunchUtils.publishGridOverlayTile(context, OnOffTileState.STATE_ON);
+                LaunchUtils.launchGridOverlay(context);
             } else {
-                publishGridTile(context, OnOffTileState.STATE_OFF);
-                PreferenceUtils.setGridOverlayActive(context, false);
+                LaunchUtils.publishGridOverlayTile(context, OnOffTileState.STATE_OFF);
+                LaunchUtils.cancelGridOverlay(context);
             }
         }
     }

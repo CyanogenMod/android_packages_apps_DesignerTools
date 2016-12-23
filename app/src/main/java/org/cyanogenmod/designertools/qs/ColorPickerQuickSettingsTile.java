@@ -24,6 +24,7 @@ import android.content.Intent;
 import org.cyanogenmod.designertools.DesignerToolsApplication;
 import org.cyanogenmod.designertools.overlays.ColorPickerOverlay;
 import org.cyanogenmod.designertools.ui.ScreenRecordRequestActivity;
+import org.cyanogenmod.designertools.utils.LaunchUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
 import org.cyanogenmod.designertools.R;
 
@@ -77,7 +78,7 @@ public class ColorPickerQuickSettingsTile {
                         intent.getIntExtra(OnOffTileState.EXTRA_STATE, OnOffTileState.STATE_OFF);
                 if (state == OnOffTileState.STATE_OFF) {
                     publishColorPickerTile(context, OnOffTileState.STATE_ON);
-                    startColorPickerOrRequestPermission(context);
+                    LaunchUtils.startColorPickerOrRequestPermission(context);
                 } else {
                     publishColorPickerTile(context, OnOffTileState.STATE_OFF);
                     PreferenceUtils.setColorPickerActive(context, false);

@@ -24,6 +24,7 @@ import android.util.Log;
 
 import org.cyanogenmod.designertools.DesignerToolsApplication;
 import org.cyanogenmod.designertools.R;
+import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
 
 @TargetApi(Build.VERSION_CODES.N)
@@ -60,9 +61,11 @@ public class ColorPickerTileService extends TileService {
         super.onClick();
         boolean isOn = ((DesignerToolsApplication) getApplicationContext()).getColorPickerOn();
         if (isOn) {
-            LaunchUtils.cancelColorPickerOrUnpublishTile(this);
+            LaunchUtils.publishColorPickerTile(this, OnOffTileState.STATE_OFF);
+            LaunchUtils.cancelColorPickerOverlay(this);
         } else {
-            LaunchUtils.lauchColorPickerOrPublishTile(this, 0);
+            LaunchUtils.publishColorPickerTile(this, OnOffTileState.STATE_ON);
+            LaunchUtils.launchColorPickerOverlay(this);
         }
         updateTile(!isOn);
     }

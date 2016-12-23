@@ -61,9 +61,9 @@ public class GridOverlayTileService extends TileService {
         super.onClick();
         boolean isOn = ((DesignerToolsApplication) getApplicationContext()).getGridOverlayOn();
         if (isOn) {
-            LaunchUtils.cancelGridOverlayOrUnpublishTile(this);
+            LaunchUtils.cancelGridOverlay(this);
         } else {
-            LaunchUtils.lauchGridOverlayOrPublishTile(this, 0);
+            LaunchUtils.launchGridOverlay(this);
         }
         updateTile(!isOn);
     }

@@ -78,6 +78,9 @@ public class ColorPickerCardFragment extends DesignerToolCardFragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    private void isEnabled() {
+    }
+
     private void enableFeature(boolean enable) {
         if (enable) {
             LaunchUtils.lauchColorPickerOrPublishTile(getContext(),

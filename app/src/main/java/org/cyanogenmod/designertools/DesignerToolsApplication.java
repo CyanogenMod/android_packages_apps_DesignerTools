@@ -19,6 +19,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 
+import org.cyanogenmod.designertools.utils.PreferenceUtils;
+
 public class DesignerToolsApplication extends Application {
 
     private int mResultCode = Activity.RESULT_CANCELED;
@@ -47,7 +49,7 @@ public class DesignerToolsApplication extends Application {
     }
 
     public boolean getGridOverlayOn() {
-        return mGridOverlayOn;
+        return mGridOverlayOn || PreferenceUtils.getGridQsTileEnabled(this, false);
     }
 
     public void setMockOverlayOn(boolean on) {
@@ -55,7 +57,7 @@ public class DesignerToolsApplication extends Application {
     }
 
     public boolean getMockOverlayOn() {
-        return mMockOverlayOn;
+        return mMockOverlayOn || PreferenceUtils.getMockQsTileEnabled(this, false);
     }
 
     public void setColorPickerOn(boolean on) {
@@ -63,7 +65,7 @@ public class DesignerToolsApplication extends Application {
     }
 
     public boolean getColorPickerOn() {
-        return mColorPickerOn;
+        return mColorPickerOn || PreferenceUtils.getColorPickerQsTileEnabled(this, false);
     }
 
     public void setScreenshotOn(boolean on) {
