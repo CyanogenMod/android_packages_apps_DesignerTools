@@ -17,7 +17,7 @@
     <string name="app_name">Designer Tools</string>
 
     <string name="header_title_grid_overlay">Grid overlay</string>
-    <string name="header_summary_grid_overlay">On-screen grids help you check your layouts for misaligned elements and inconsistent spacing across your app. Cycle between 8dp, 4dp text baseline, and a custom size of your choice.</string>
+    <string name="header_summary_grid_overlay">On-screen grids help you check your layouts for misaligned elements and inconsistent spacing across your app. Use the default 8dp grid or a custom size of your choice.</string>
 
     <string name="header_title_mockup_overlay">Mockup overlay</string>
     <string name="header_summary_mockup_overlay">Overlaying a mockup gives you a live preview of the screen layout as you’re working.</string>
