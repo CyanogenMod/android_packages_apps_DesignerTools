@@ -5,6 +5,9 @@ package org.cyanogenmod.designertools.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.SeekBar;
@@ -15,12 +18,12 @@ public class VerticalSeekBar extends SeekBar {
         super(context);
     }
 
-    public VerticalSeekBar(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-    }
-
     public VerticalSeekBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    public VerticalSeekBar(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
     }
 
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -34,10 +37,26 @@ public class VerticalSeekBar extends SeekBar {
     }
 
     protected void onDraw(Canvas c) {
-        c.rotate(-90);
+        c.rotate(270);
         c.translate(-getHeight(), 0);
-
         super.onDraw(c);
+
+        // Work around for known bug with Marshmallow where the enabled thumb is not drawn
+        if (isEnabled() && Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            drawThumb(c);
+        }
+    }
+
+    void drawThumb(Canvas canvas) {
+        Drawable thumb = getThumb();
+        if (thumb != null) {
+            Rect thumbBounds = thumb.getBounds();
+            canvas.save();
+            canvas.rotate(270, thumbBounds.exactCenterX(), thumbBounds.exactCenterY());
+            canvas.translate(0, thumbBounds.height() / 3f);
+            thumb.draw(canvas);
+            canvas.restore();
+        }
     }
 
     @Override
