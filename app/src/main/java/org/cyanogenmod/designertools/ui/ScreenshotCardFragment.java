@@ -27,7 +27,7 @@ import android.widget.CompoundButton;
 
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.service.ScreenshotListenerService;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.ScreenshotPreferences;
 
 public class ScreenshotCardFragment extends DesignerToolCardFragment {
 
@@ -41,7 +41,8 @@ public class ScreenshotCardFragment extends DesignerToolCardFragment {
         base.setBackgroundTintList(ColorStateList.valueOf(
                 getResources().getColor(R.color.colorScreenshotCardTint)));
 
-        mEnabledSwitch.setChecked(PreferenceUtils.getScreenshotInfoEnabled(getContext(), false));
+        mEnabledSwitch.setChecked(ScreenshotPreferences.getScreenshotInfoEnabled(getContext(),
+                false));
 
         return base;
     }
@@ -50,7 +51,7 @@ public class ScreenshotCardFragment extends DesignerToolCardFragment {
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
             int[] grantResults) {
         if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            PreferenceUtils.setScreenshotInfoEnabled(getContext(), true);
+            ScreenshotPreferences.setScreenshotInfoEnabled(getContext(), true);
             Intent newIntent = new Intent(getContext(), ScreenshotListenerService.class);
             getContext().startService(newIntent);
             mEnabledSwitch.setChecked(true);
@@ -71,7 +72,7 @@ public class ScreenshotCardFragment extends DesignerToolCardFragment {
         if (isChecked) {
             if (getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
-                PreferenceUtils.setScreenshotInfoEnabled(getContext(), isChecked);
+                ScreenshotPreferences.setScreenshotInfoEnabled(getContext(), isChecked);
                 Intent newIntent = new Intent(getContext(), ScreenshotListenerService.class);
                 getContext().startService(newIntent);
             } else {
@@ -79,7 +80,7 @@ public class ScreenshotCardFragment extends DesignerToolCardFragment {
                 requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 42);
             }
         } else {
-            PreferenceUtils.setScreenshotInfoEnabled(getContext(), false);
+            ScreenshotPreferences.setScreenshotInfoEnabled(getContext(), false);
         }
     }
 }

@@ -36,7 +36,7 @@ import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.utils.ImageUtils;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
 import org.cyanogenmod.designertools.utils.MockupUtils;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.MockPreferences;
 
 import java.io.IOException;
 
@@ -93,7 +93,7 @@ public class MockupOverlayCardFragmnt extends DesignerToolCardFragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int opacity = (progress + 1) *10;
-                PreferenceUtils.setMockOpacity(getContext(), opacity);
+                MockPreferences.setMockOpacity(getContext(), opacity);
                 setOpacityLevel(opacity);
             }
 
@@ -107,7 +107,7 @@ public class MockupOverlayCardFragmnt extends DesignerToolCardFragment {
 
             }
         });
-        int opacity = PreferenceUtils.getMockOpacity(getContext(), 10);
+        int opacity = MockPreferences.getMockOpacity(getContext(), 10);
         setOpacityLevel(opacity);
 
         return base;
@@ -123,7 +123,7 @@ public class MockupOverlayCardFragmnt extends DesignerToolCardFragment {
         if (isChecked == getApplicationContext().getMockOverlayOn()) return;
         if (isChecked) {
             LaunchUtils.lauchMockPverlayOrPublishTile(getContext(),
-                    PreferenceUtils.getMockOverlayActive(getContext(), false)
+                    MockPreferences.getMockOverlayActive(getContext(), false)
                             ? OnOffTileState.STATE_ON
                             : OnOffTileState.STATE_OFF);
         } else {

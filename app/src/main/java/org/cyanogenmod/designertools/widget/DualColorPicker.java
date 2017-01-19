@@ -13,7 +13,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import org.cyanogenmod.designertools.R;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
 
 public class DualColorPicker extends View {
     private static final float STROKE_WIDTH = 5f;
@@ -40,10 +40,10 @@ public class DualColorPicker extends View {
         super(context, attrs, defStyleAttr, defStyleRes);
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.DualColorPicker, 0, 0);
         int primaryColor = ta.getColor(R.styleable.DualColorPicker_primaryColor,
-                PreferenceUtils.getGridLineColor(context, getResources()
+                GridPreferences.getGridLineColor(context, getResources()
                 .getColor(R.color.dualColorPickerDefaultPrimaryColor)));
         int secondaryColor = ta.getColor(R.styleable.DualColorPicker_primaryColor,
-                PreferenceUtils.getKeylineColor(context, getResources()
+                GridPreferences.getKeylineColor(context, getResources()
                 .getColor(R.color.dualColorPickerDefaultSecondaryColor)));
 
         mPrimaryFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);

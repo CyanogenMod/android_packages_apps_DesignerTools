@@ -9,7 +9,8 @@ import android.provider.Settings;
 import org.cyanogenmod.designertools.overlays.GridOverlay;
 import org.cyanogenmod.designertools.overlays.MockOverlay;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.MockPreferences;
 
 /**
  * Created by clark on 12/19/16.
@@ -62,14 +63,14 @@ public class StartOverlayActivity extends Activity {
             case GRID_OVERLAY:
                 Intent newIntent = new Intent(this, GridOverlay.class);
                 this.startService(newIntent);
-                PreferenceUtils.setGridOverlayActive(this, true);
-                PreferenceUtils.setGridQsTileEnabled(this, true);
+                GridPreferences.setGridOverlayActive(this, true);
+                GridPreferences.setGridQsTileEnabled(this, true);
                 break;
             case MOCK_OVERLAY:
                 newIntent = new Intent(this, MockOverlay.class);
                 this.startService(newIntent);
-                PreferenceUtils.setMockOverlayActive(this, true);
-                PreferenceUtils.setMockQsTileEnabled(this, true);
+                MockPreferences.setMockOverlayActive(this, true);
+                MockPreferences.setMockQsTileEnabled(this, true);
                 break;
             case COLOR_PICKER_OVERLAY:
                 LaunchUtils.startColorPickerOrRequestPermission(this);

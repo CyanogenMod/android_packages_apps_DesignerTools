@@ -27,7 +27,7 @@ import android.widget.CompoundButton;
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.ColorPickerPreferences;
 
 public class ColorPickerCardFragment extends DesignerToolCardFragment {
     private static final int REQUEST_OVERLAY_PERMISSION = 0x42;
@@ -84,7 +84,7 @@ public class ColorPickerCardFragment extends DesignerToolCardFragment {
     private void enableFeature(boolean enable) {
         if (enable) {
             LaunchUtils.lauchColorPickerOrPublishTile(getContext(),
-                    PreferenceUtils.getColorPickerActive(getContext(), false)
+                    ColorPickerPreferences.getColorPickerActive(getContext(), false)
                             ? OnOffTileState.STATE_ON
                             : OnOffTileState.STATE_OFF);
         } else {

@@ -29,7 +29,7 @@ import android.view.ViewGroup;
 
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.utils.ColorUtils;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
 import com.larswerkman.lobsterpicker.LobsterPicker;
 import com.larswerkman.lobsterpicker.sliders.LobsterOpacitySlider;
 import com.viewpagerindicator.CirclePageIndicator;
@@ -113,9 +113,9 @@ public class DualColorPickerDialog extends DialogFragment {
         public void onClick(DialogInterface dialog, int which) {
             switch (which) {
                 case AlertDialog.BUTTON_POSITIVE:
-                    PreferenceUtils.setGridLineColor(getContext(),
+                    GridPreferences.setGridLineColor(getContext(),
                             mColorPickerViews[0].picker.getColor());
-                    PreferenceUtils.setKeylineColor(getContext(),
+                    GridPreferences.setKeylineColor(getContext(),
                             mColorPickerViews[1].picker.getColor());
                     break;
                 case AlertDialog.BUTTON_NEGATIVE:

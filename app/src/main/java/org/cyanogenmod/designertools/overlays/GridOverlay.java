@@ -43,6 +43,7 @@ import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.utils.ColorUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
 
 public class GridOverlay extends Service {
     private static final int NOTIFICATION_ID = GridOverlay.class.hashCode();
@@ -218,18 +219,17 @@ public class GridOverlay extends Service {
             mHorizontalMarkerRight = context.getDrawable(R.drawable.ic_marker_horiz_right);
             mVerticalMarker = context.getDrawable(R.drawable.ic_marker_vert);
 
-            SharedPreferences prefs = PreferenceUtils.getShardedPreferences(context);
-            mShowGrid = PreferenceUtils.getShowGrid(context, false);
-            mShowKeylines = PreferenceUtils.getShowKeylines(context, false);
+            mShowGrid = GridPreferences.getShowGrid(context, false);
+            mShowKeylines = GridPreferences.getShowKeylines(context, false);
 
-            boolean useCustom = PreferenceUtils.getUseCustomGridSize(getContext(),
+            boolean useCustom = GridPreferences.getUseCustomGridSize(getContext(),
                     false);
             int defColumnSize = getResources().getInteger(
                     R.integer.default_column_size);
             int defRowSize = getResources().getInteger(R.integer.default_row_size);
-            mColumnSize = mDensity * (!useCustom ? defColumnSize : PreferenceUtils
+            mColumnSize = mDensity * (!useCustom ? defColumnSize : GridPreferences
                     .getGridColumnSize(getContext(), defColumnSize));
-            mRowSize = mDensity * (!useCustom ? defRowSize : PreferenceUtils
+            mRowSize = mDensity * (!useCustom ? defRowSize : GridPreferences
                     .getGridRowSize(getContext(), defRowSize));
             mKeylineWidth = 1.5f * mDensity;
         }
@@ -295,43 +295,43 @@ public class GridOverlay extends Service {
                     @Override
                     public void onSharedPreferenceChanged(SharedPreferences prefs,
                             String key) {
-                        if (PreferenceUtils.KEY_SHOW_GRID.equals(key)) {
+                        if (GridPreferences.KEY_SHOW_GRID.equals(key)) {
                             boolean enabled =
-                                    prefs.getBoolean(PreferenceUtils.KEY_SHOW_GRID, false);
+                                    prefs.getBoolean(GridPreferences.KEY_SHOW_GRID, false);
                             if (mShowGrid != enabled) {
                                 mShowGrid = enabled;
                                 invalidate();
                             }
-                        } else if (PreferenceUtils.KEY_SHOW_KEYLINES.equals(key)) {
+                        } else if (GridPreferences.KEY_SHOW_KEYLINES.equals(key)) {
                             boolean enabled =
-                                    prefs.getBoolean(PreferenceUtils.KEY_SHOW_KEYLINES, false);
+                                    prefs.getBoolean(GridPreferences.KEY_SHOW_KEYLINES, false);
                             if (enabled != mShowKeylines) {
                                 mShowKeylines = enabled;
                                 invalidate();
                             }
-                        } else if (PreferenceUtils.KEY_GRID_COLUMN_SIZE.equals(key)) {
-                            mColumnSize = mDensity * PreferenceUtils.getGridColumnSize(getContext(),
+                        } else if (GridPreferences.KEY_GRID_COLUMN_SIZE.equals(key)) {
+                            mColumnSize = mDensity * GridPreferences.getGridColumnSize(getContext(),
                                     getResources().getInteger(R.integer.default_column_size));
                             invalidate();
-                        } else if (PreferenceUtils.KEY_GRID_ROW_SIZE.equals(key)) {
-                            mRowSize = mDensity * PreferenceUtils.getGridRowSize(getContext(),
+                        } else if (GridPreferences.KEY_GRID_ROW_SIZE.equals(key)) {
+                            mRowSize = mDensity * GridPreferences.getGridRowSize(getContext(),
                                     getResources().getInteger(R.integer.default_row_size));
                             invalidate();
-                        } else if (PreferenceUtils.KEY_GRID_LINE_COLOR.equals(key)) {
+                        } else if (GridPreferences.KEY_GRID_LINE_COLOR.equals(key)) {
                             mGridPaint.setColor(ColorUtils.getGridLineColor(getContext()));
                             invalidate();
-                        } else if (PreferenceUtils.KEY_KEYLINE_COLOR.equals(key)) {
+                        } else if (GridPreferences.KEY_KEYLINE_COLOR.equals(key)) {
                             mKeylinePaint.setColor(ColorUtils.getKeylineColor(getContext()));
                             invalidate();
-                        } else if (PreferenceUtils.KEY_USE_CUSTOM_GRID_SIZE.equals(key)) {
-                            boolean useCustom = PreferenceUtils.getUseCustomGridSize(getContext(),
+                        } else if (GridPreferences.KEY_USE_CUSTOM_GRID_SIZE.equals(key)) {
+                            boolean useCustom = GridPreferences.getUseCustomGridSize(getContext(),
                                     false);
                             int defColumnSize = getResources().getInteger(
                                     R.integer.default_column_size);
                             int defRowSize = getResources().getInteger(R.integer.default_row_size);
-                            mColumnSize = mDensity * (!useCustom ? defColumnSize : PreferenceUtils
+                            mColumnSize = mDensity * (!useCustom ? defColumnSize : GridPreferences
                                     .getGridColumnSize(getContext(), defColumnSize));
-                            mRowSize = mDensity * (!useCustom ? defRowSize : PreferenceUtils
+                            mRowSize = mDensity * (!useCustom ? defRowSize : GridPreferences
                                     .getGridRowSize(getContext(), defRowSize));
                             invalidate();
                         }

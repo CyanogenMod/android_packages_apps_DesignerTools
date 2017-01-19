@@ -21,9 +21,8 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.cyanogenmod.designertools.R;
-import org.cyanogenmod.designertools.overlays.MockOverlay;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.MockPreferences;
 
 import cyanogenmod.app.CMStatusBarManager;
 import cyanogenmod.app.CustomTile;
@@ -56,12 +55,12 @@ public class MockQuickSettingsTile {
                 .setIcon(iconResId)
                 .build();
         CMStatusBarManager.getInstance(context).publishTile(TAG, TILE_ID, tile);
-        PreferenceUtils.setMockQsTileEnabled(context, true);
+        MockPreferences.setMockQsTileEnabled(context, true);
     }
 
     public static void unpublishMockTile(Context context) {
         CMStatusBarManager.getInstance(context).removeTile(TAG, TILE_ID);
-        PreferenceUtils.setMockQsTileEnabled(context, false);
+        MockPreferences.setMockQsTileEnabled(context, false);
         Intent intent = new Intent(MockQuickSettingsTile.ACTION_UNPUBLISH);
         context.sendBroadcast(intent);
     }

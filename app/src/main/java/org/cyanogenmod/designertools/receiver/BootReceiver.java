@@ -33,19 +33,19 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         final boolean isCm = LaunchUtils.isCyanogenMod(context);
-        if (PreferenceUtils.getGridQsTileEnabled(context, false)) {
-            PreferenceUtils.setGridOverlayActive(context, false);
+        if (PreferenceUtils.GridPreferences.getGridQsTileEnabled(context, false)) {
+            PreferenceUtils.GridPreferences.setGridOverlayActive(context, false);
             if (isCm) GridQuickSettingsTile.publishGridTile(context);
         }
-        if (PreferenceUtils.getMockQsTileEnabled(context, false)) {
-            PreferenceUtils.setMockOverlayActive(context, false);
+        if (PreferenceUtils.MockPreferences.getMockQsTileEnabled(context, false)) {
+            PreferenceUtils.MockPreferences.setMockOverlayActive(context, false);
             if (isCm) MockQuickSettingsTile.publishMockTile(context);
         }
-        if (PreferenceUtils.getColorPickerQsTileEnabled(context, false)) {
-            PreferenceUtils.setColorPickerActive(context, false);
+        if (PreferenceUtils.ColorPickerPreferences.getColorPickerQsTileEnabled(context, false)) {
+            PreferenceUtils.ColorPickerPreferences.setColorPickerActive(context, false);
             if (isCm) ColorPickerQuickSettingsTile.publishColorPickerTile(context);
         }
-        if (PreferenceUtils.getScreenshotInfoEnabled(context, false)) {
+        if (PreferenceUtils.ScreenshotPreferences.getScreenshotInfoEnabled(context, false)) {
             Intent newIntent = new Intent(context, ScreenshotListenerService.class);
             context.startService(newIntent);
         }

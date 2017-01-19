@@ -40,6 +40,7 @@ import org.cyanogenmod.designertools.qs.MockQuickSettingsTile;
 import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.utils.MockupUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.MockPreferences;
 
 import java.io.File;
 
@@ -174,7 +175,7 @@ public class MockOverlay extends Service {
             SharedPreferences prefs = PreferenceUtils.getShardedPreferences(getContext());
             prefs.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
             setImageBitmap(getBitmapForOrientation(getResources().getConfiguration().orientation));
-            setAlpha(PreferenceUtils.getMockOpacity(getContext(), 10) / 100f);
+            setAlpha(MockPreferences.getMockOpacity(getContext(), 10) / 100f);
             invalidate();
         }
 
@@ -202,13 +203,13 @@ public class MockOverlay extends Service {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences prefs,
                                                   String key) {
-                if (PreferenceUtils.KEY_MOCKUP_OVERLAY_PORTRAIT.equals(key) ||
-                        PreferenceUtils.KEY_MOCKUP_OVERLAY_LANDSCAPE.equals(key)) {
+                if (MockPreferences.KEY_MOCKUP_OVERLAY_PORTRAIT.equals(key) ||
+                        MockPreferences.KEY_MOCKUP_OVERLAY_LANDSCAPE.equals(key)) {
                     setImageBitmap(getBitmapForOrientation(
                             getResources().getConfiguration().orientation));
                     invalidate();
-                } else if (PreferenceUtils.KEY_MOCK_OPACITY.equals(key)) {
-                    int opacity = PreferenceUtils.getMockOpacity(getContext(), 10);
+                } else if (MockPreferences.KEY_MOCK_OPACITY.equals(key)) {
+                    int opacity = MockPreferences.getMockOpacity(getContext(), 10);
                     setAlpha(opacity / 100f);
                     invalidate();
                 }

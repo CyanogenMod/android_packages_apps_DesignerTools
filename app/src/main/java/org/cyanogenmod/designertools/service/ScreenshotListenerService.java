@@ -31,6 +31,7 @@ import android.util.Log;
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.ui.DesignerToolsActivity;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.ScreenshotPreferences;
 
 import java.io.File;
 
@@ -73,8 +74,8 @@ public class ScreenshotListenerService extends Service
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (PreferenceUtils.KEY_SCREENSHOT_INFO.equals(key)) {
-            boolean enabled = PreferenceUtils.getScreenshotInfoEnabled(this, false);
+        if (ScreenshotPreferences.KEY_SCREENSHOT_INFO.equals(key)) {
+            boolean enabled = ScreenshotPreferences.getScreenshotInfoEnabled(this, false);
             if (!enabled) {
                 stopSelf();
             }
@@ -106,11 +107,8 @@ public class ScreenshotListenerService extends Service
         private static final String SORT_ORDER = MediaStore.Images.Media.DATE_ADDED + " DESC";
         private static final long DEFAULT_DETECT_WINDOW_SECONDS = 10;
 
-        private Handler mHandler;
-
-        public ScreenShotObserver(Handler handler) {
+        ScreenShotObserver(Handler handler) {
             super(handler);
-            mHandler = handler;
         }
 
         @Override

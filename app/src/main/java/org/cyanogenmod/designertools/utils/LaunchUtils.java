@@ -29,6 +29,9 @@ import org.cyanogenmod.designertools.qs.GridQuickSettingsTile;
 import org.cyanogenmod.designertools.qs.MockQuickSettingsTile;
 import org.cyanogenmod.designertools.ui.ScreenRecordRequestActivity;
 import org.cyanogenmod.designertools.ui.StartOverlayActivity;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.ColorPickerPreferences;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.MockPreferences;
 
 public class LaunchUtils {
     public static boolean isCyanogenMod(Context context) {
@@ -58,8 +61,8 @@ public class LaunchUtils {
     public static void cancelGridOverlay(Context context) {
         Intent newIntent = new Intent(context, GridOverlay.class);
         context.stopService(newIntent);
-        PreferenceUtils.setGridOverlayActive(context, false);
-        PreferenceUtils.setGridQsTileEnabled(context, false);
+        GridPreferences.setGridOverlayActive(context, false);
+        GridPreferences.setGridQsTileEnabled(context, false);
     }
 
     public static void cancelGridOverlayOrUnpublishTile(Context context) {
@@ -94,8 +97,8 @@ public class LaunchUtils {
     public static void cancelMockOverlay(Context context) {
         Intent newIntent = new Intent(context, MockOverlay.class);
         context.stopService(newIntent);
-        PreferenceUtils.setMockOverlayActive(context, false);
-        PreferenceUtils.setMockQsTileEnabled(context, false);
+        MockPreferences.setMockOverlayActive(context, false);
+        MockPreferences.setMockQsTileEnabled(context, false);
     }
 
     public static void cancelMockOverlayOrUnpublishTile(Context context) {
@@ -129,8 +132,8 @@ public class LaunchUtils {
     public static void cancelColorPickerOverlay(Context context) {
         Intent newIntent = new Intent(context, ColorPickerOverlay.class);
         context.stopService(newIntent);
-        PreferenceUtils.setColorPickerActive(context, false);
-        PreferenceUtils.setColorPickerQsTileEnabled(context, false);
+        ColorPickerPreferences.setColorPickerActive(context, false);
+        ColorPickerPreferences.setColorPickerQsTileEnabled(context, false);
     }
 
     public static void cancelColorPickerOrUnpublishTile(Context context) {
@@ -147,8 +150,8 @@ public class LaunchUtils {
         if (app.getScreenRecordResultCode() == Activity.RESULT_OK && app.getScreenRecordResultData() != null) {
             Intent newIntent = new Intent(context, ColorPickerOverlay.class);
             context.startService(newIntent);
-            PreferenceUtils.setColorPickerActive(context, true);
-            PreferenceUtils.setColorPickerQsTileEnabled(context, true);
+            ColorPickerPreferences.setColorPickerActive(context, true);
+            ColorPickerPreferences.setColorPickerQsTileEnabled(context, true);
         } else {
             Intent intent = new Intent(context, ScreenRecordRequestActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

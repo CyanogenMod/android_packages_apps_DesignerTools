@@ -22,7 +22,7 @@ import android.content.Intent;
 
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
 
 import cyanogenmod.app.CMStatusBarManager;
 import cyanogenmod.app.CustomTile;
@@ -55,12 +55,12 @@ public class GridQuickSettingsTile {
                 .setIcon(iconResId)
                 .build();
         CMStatusBarManager.getInstance(context).publishTile(TAG, TILE_ID, tile);
-        PreferenceUtils.setGridQsTileEnabled(context, true);
+        GridPreferences.setGridQsTileEnabled(context, true);
     }
 
     public static void unpublishGridTile(Context context) {
         CMStatusBarManager.getInstance(context).removeTile(TAG,  TILE_ID);
-        PreferenceUtils.setGridQsTileEnabled(context, false);
+        GridPreferences.setGridQsTileEnabled(context, false);
         Intent intent = new Intent(GridQuickSettingsTile.ACTION_UNPUBLISH);
         context.sendBroadcast(intent);
     }

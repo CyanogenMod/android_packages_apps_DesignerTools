@@ -25,7 +25,7 @@ import org.cyanogenmod.designertools.DesignerToolsApplication;
 import org.cyanogenmod.designertools.overlays.ColorPickerOverlay;
 import org.cyanogenmod.designertools.ui.ScreenRecordRequestActivity;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.ColorPickerPreferences;
 import org.cyanogenmod.designertools.R;
 
 import cyanogenmod.app.CMStatusBarManager;
@@ -60,12 +60,12 @@ public class ColorPickerQuickSettingsTile {
                 .setIcon(iconResId)
                 .build();
         CMStatusBarManager.getInstance(context).publishTile(TAG, TILE_ID, tile);
-        PreferenceUtils.setColorPickerQsTileEnabled(context, true);
+        ColorPickerPreferences.setColorPickerQsTileEnabled(context, true);
     }
 
     public static void unpublishColorPickerTile(Context context) {
         CMStatusBarManager.getInstance(context).removeTile(TAG, TILE_ID);
-        PreferenceUtils.setColorPickerQsTileEnabled(context, false);
+        ColorPickerPreferences.setColorPickerQsTileEnabled(context, false);
         Intent intent = new Intent(ColorPickerQuickSettingsTile.ACTION_UNPUBLISH);
         context.sendBroadcast(intent);
     }
@@ -73,7 +73,7 @@ public class ColorPickerQuickSettingsTile {
     public static class ClickBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (PreferenceUtils.getColorPickerQsTileEnabled(context, false)) {
+            if (ColorPickerPreferences.getColorPickerQsTileEnabled(context, false)) {
                 int state =
                         intent.getIntExtra(OnOffTileState.EXTRA_STATE, OnOffTileState.STATE_OFF);
                 if (state == OnOffTileState.STATE_OFF) {
@@ -81,7 +81,7 @@ public class ColorPickerQuickSettingsTile {
                     LaunchUtils.startColorPickerOrRequestPermission(context);
                 } else {
                     publishColorPickerTile(context, OnOffTileState.STATE_OFF);
-                    PreferenceUtils.setColorPickerActive(context, false);
+                    ColorPickerPreferences.setColorPickerActive(context, false);
                 }
             }
         }
@@ -92,7 +92,7 @@ public class ColorPickerQuickSettingsTile {
             if (app.getScreenRecordResultCode() == Activity.RESULT_OK && app.getScreenRecordResultData() != null) {
                 Intent newIntent = new Intent(context, ColorPickerOverlay.class);
                 context.startService(newIntent);
-                PreferenceUtils.setColorPickerActive(context, true);
+                ColorPickerPreferences.setColorPickerActive(context, true);
             } else {
                 Intent intent = new Intent(context, ScreenRecordRequestActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
