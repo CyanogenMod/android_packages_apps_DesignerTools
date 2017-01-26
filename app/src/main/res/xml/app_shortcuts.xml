@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="grid_overlay"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_grid"
+        android:shortcutShortLabel="@string/header_title_grid_overlay">
+        <intent
+            android:action="com.scheffsblend.designertools.action.SHOW_GRID_OVERLAY"
+            android:targetPackage="com.scheffsblend.designertools"
+            android:targetClass="org.cyanogenmod.designertools.ui.AppShortcutsActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="mock_overlay"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_mock"
+        android:shortcutShortLabel="@string/header_title_mockup_overlay">
+        <intent
+            android:action="com.scheffsblend.designertools.action.SHOW_MOCK_OVERLAY"
+            android:targetPackage="com.scheffsblend.designertools"
+            android:targetClass="org.cyanogenmod.designertools.ui.AppShortcutsActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="color_picker"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_colorpicker"
+        android:shortcutShortLabel="@string/header_title_color_picker">
+        <intent
+            android:action="com.scheffsblend.designertools.action.SHOW_COLOR_PICKER_OVERLAY"
+            android:targetPackage="com.scheffsblend.designertools"
+            android:targetClass="org.cyanogenmod.designertools.ui.AppShortcutsActivity" />
+    </shortcut>
+</shortcuts>

@@ -23,6 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <meta-data android:name="android.app.shortcuts"
+                android:resource="@xml/app_shortcuts" />
         </activity>
 
         <activity android:name=".ui.ScreenRecordRequestActivity"
@@ -38,6 +40,11 @@
         <activity android:name=".ui.CreditsActivity"
             android:theme="@style/AppTheme.Credits"
             android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.AppShortcutsActivity"
+            android:theme="@style/TransparentTheme"
+            android:exported="false"
+            android:excludeFromRecents="true" />
 
         <receiver android:name=".qs.GridQuickSettingsTile$ClickBroadcastReceiver">
             <intent-filter>
