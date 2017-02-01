@@ -28,6 +28,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.os.IBinder;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,15 +86,17 @@ public class MockOverlay extends Service {
     }
 
     private void setup() {
+        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        Point size = new Point();
+        mWindowManager.getDefaultDisplay().getRealSize(size);
         mParams = new WindowManager.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
+                size.x, size.y,
                 WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSPARENT);
         mOverlayView = new MockOverlayView(this);
-        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mWindowManager.addView(mOverlayView, mParams);
         IntentFilter filter = new IntentFilter(MockQuickSettingsTile.ACTION_TOGGLE_STATE);
         filter.addAction(MockQuickSettingsTile.ACTION_UNPUBLISH);
