@@ -26,12 +26,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.IBinder;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
@@ -43,17 +41,11 @@ import org.cyanogenmod.designertools.utils.MockupUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils.MockPreferences;
 
-import java.io.File;
-
 public class MockOverlay extends Service {
     private static final int NOTIFICATION_ID = MockOverlay.class.hashCode();
 
     private static final String ACTION_HIDE_OVERLAY = "hide_mock_overlay";
     private static final String ACTION_SHOW_OVERLAY = "show_mock_overlay";
-
-    private static final String MOCK_OVERLAY_FILENAME = "mock_overlay.png";
-
-    private static Bitmap sOverlayImage;
 
     private WindowManager mWindowManager;
     private MockOverlayView mOverlayView;
@@ -155,18 +147,6 @@ public class MockOverlay extends Service {
         }
     };
 
-    public static Bitmap getMockOverlayBitmap(Context context) {
-        if (sOverlayImage == null) {
-            File filesDir = context.getFilesDir();
-            File mockOverlayFile = new File(filesDir, MOCK_OVERLAY_FILENAME);
-            if (mockOverlayFile.exists()) {
-                sOverlayImage = BitmapFactory.decodeFile(mockOverlayFile.getAbsolutePath());
-            }
-        }
-
-        return sOverlayImage;
-    }
-
     static class MockOverlayView extends ImageView {
         public MockOverlayView(Context context) {
             super(context);
@@ -178,7 +158,7 @@ public class MockOverlay extends Service {
             SharedPreferences prefs = PreferenceUtils.getShardedPreferences(getContext());
             prefs.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
             setImageBitmap(getBitmapForOrientation(getResources().getConfiguration().orientation));
-            setAlpha(MockPreferences.getMockOpacity(getContext(), 10) / 100f);
+            setImageAlpha(MockPreferences.getMockOpacity(getContext(), 10));
             invalidate();
         }
 
@@ -212,8 +192,7 @@ public class MockOverlay extends Service {
                             getResources().getConfiguration().orientation));
                     invalidate();
                 } else if (MockPreferences.KEY_MOCK_OPACITY.equals(key)) {
-                    int opacity = MockPreferences.getMockOpacity(getContext(), 10);
-                    setAlpha(opacity / 100f);
+                    setImageAlpha(MockPreferences.getMockOpacity(getContext(), 10));
                     invalidate();
                 }
             }
