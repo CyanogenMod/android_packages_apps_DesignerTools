@@ -102,10 +102,10 @@ public class ScreenshotListenerService extends Service
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString();
         private final String[] PROJECTION = new String[] {
                 MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.DATE_ADDED
+                MediaStore.Images.Media.DATE_TAKEN
         };
         private static final String SORT_ORDER = MediaStore.Images.Media.DATE_ADDED + " DESC";
-        private static final long DEFAULT_DETECT_WINDOW_SECONDS = 10;
+        private static final long DEFAULT_DETECT_WINDOW_MS = 1000;
 
         ScreenShotObserver(Handler handler) {
             super(handler);
@@ -122,21 +122,15 @@ public class ScreenshotListenerService extends Service
                         String path = cursor.getString(
                                 cursor.getColumnIndex(MediaStore.Images.Media.DATA));
                         long dateAdded = cursor.getLong(cursor.getColumnIndex(
-                                MediaStore.Images.Media.DATE_ADDED));
-                        long currentTime = System.currentTimeMillis() / 1000;
-                        Log.d(TAG, "path: " + path + ", dateAdded: " + dateAdded +
-                                ", currentTime: " + currentTime);
+                                MediaStore.Images.Media.DATE_TAKEN));
+                        long currentTime = System.currentTimeMillis();
                         if (path.toLowerCase().contains("screenshot") &&
                                 Math.abs(currentTime - dateAdded) <=
-                                        DEFAULT_DETECT_WINDOW_SECONDS) {
+                                        DEFAULT_DETECT_WINDOW_MS) {
                             Intent intent =
                                     new Intent(ScreenshotListenerService.this,
                                             ScreenshotInfoService.class);
                             intent.putExtra(ScreenshotInfoService.EXTRA_PATH, path);
-                            final File file = new File(path);
-                            while (!file.exists()) {
-                                Thread.sleep(100);
-                            }
                             startService(intent);
                         }
                     }

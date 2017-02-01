@@ -26,6 +26,7 @@ import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -192,13 +193,21 @@ public class ScreenshotInfoService extends IntentService {
 
     private void saveModifiedScreenshot(Bitmap screenshot, Bitmap infoPane, String filePath)
             throws FileNotFoundException {
+        WindowManager wm = getSystemService(WindowManager.class);
+        Point size = new Point();
+        wm.getDefaultDisplay().getRealSize(size);
+        if (screenshot.getWidth() != size.x || screenshot.getHeight() != size.y) {
+            Log.d(TAG, "Not adding info, screenshot too large");
+            return;
+        }
+
         Bitmap newBmp = Bitmap.createBitmap(screenshot.getWidth() + infoPane.getWidth(),
                 screenshot.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(newBmp);
         canvas.drawColor(getColor(R.color.screenshot_info_background_color));
         canvas.drawBitmap(screenshot, 0, 0, null);
-        screenshot.recycle();
         canvas.drawBitmap(infoPane, screenshot.getWidth(), 0, null);
+        screenshot.recycle();
         infoPane.recycle();
         newBmp.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(filePath));
         newBmp.recycle();
