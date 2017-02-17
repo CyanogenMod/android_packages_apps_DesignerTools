@@ -30,6 +30,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.IBinder;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
@@ -67,8 +68,13 @@ public class MockOverlay extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (mOverlayView != null) {
-            removeViewIfAttached(mOverlayView);
-            mOverlayView = null;
+            hideOverlay(new Runnable() {
+                @Override
+                public void run() {
+                    removeViewIfAttached(mOverlayView);
+                    mOverlayView = null;
+                }
+            });
         }
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
@@ -89,7 +95,16 @@ public class MockOverlay extends Service {
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSPARENT);
         mOverlayView = new MockOverlayView(this);
+        mOverlayView.setAlpha(0f);
         mWindowManager.addView(mOverlayView, mParams);
+        mOverlayView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mOverlayView.animate().alpha(1f);
+                mOverlayView.getViewTreeObserver().removeOnPreDrawListener(this);
+                return false;
+            }
+        });
         IntentFilter filter = new IntentFilter(MockQuickSettingsTile.ACTION_TOGGLE_STATE);
         filter.addAction(MockQuickSettingsTile.ACTION_UNPUBLISH);
         filter.addAction(ACTION_HIDE_OVERLAY);
@@ -138,14 +153,34 @@ public class MockOverlay extends Service {
                     stopSelf();
                 }
             } else if (ACTION_HIDE_OVERLAY.equals(action)) {
-                removeViewIfAttached(mOverlayView);
-                updateNotification(false);
+                hideOverlay(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateNotification(false);
+                    }
+                });
             } else if (ACTION_SHOW_OVERLAY.equals(action)) {
-                mWindowManager.addView(mOverlayView, mParams);
-                updateNotification(true);
+                showOverlay();
             }
         }
     };
+
+    private void showOverlay() {
+        mWindowManager.addView(mOverlayView, mParams);
+        updateNotification(true);
+        mOverlayView.animate().alpha(1f);
+    }
+
+    private void hideOverlay(final Runnable endAction) {
+        mOverlayView.animate().alpha(0f).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                mOverlayView.setAlpha(0f);
+                removeViewIfAttached(mOverlayView);
+                if (endAction != null) endAction.run();
+            }
+        });
+    }
 
     static class MockOverlayView extends ImageView {
         public MockOverlayView(Context context) {

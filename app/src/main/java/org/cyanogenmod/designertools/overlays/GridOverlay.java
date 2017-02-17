@@ -71,8 +71,13 @@ public class GridOverlay extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (mOverlayView != null) {
-            removeViewIfAttached(mOverlayView);
-            mOverlayView = null;
+            hideOverlay(new Runnable() {
+                @Override
+                public void run() {
+                    removeViewIfAttached(mOverlayView);
+                    mOverlayView = null;
+                }
+            });
         }
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
