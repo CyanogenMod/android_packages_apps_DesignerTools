@@ -15,6 +15,9 @@
  */
 package org.cyanogenmod.designertools.overlays;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -39,11 +42,14 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 import org.cyanogenmod.designertools.DesignerToolsApplication;
 import org.cyanogenmod.designertools.qs.ColorPickerQuickSettingsTile;
@@ -88,6 +94,8 @@ public class ColorPickerOverlay extends Service {
 
     private final Object mScreenCaptureLock = new Object();
 
+    private boolean mAnimating = false;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -117,12 +125,17 @@ public class ColorPickerOverlay extends Service {
             mImageReader = null;
         }
         if (mMagnifierView != null) {
-            removeViewIfAttached(mMagnifierView);
-            mMagnifierView = null;
-        }
-        if (mMagnifierNodeView != null) {
-            removeViewIfAttached(mMagnifierNodeView);
-            mMagnifierNodeView = null;
+            animateColorPickerOut(new Runnable() {
+                @Override
+                public void run() {
+                    removeViewIfAttached(mMagnifierView);
+                    mMagnifierView = null;
+                    if (mMagnifierNodeView != null) {
+                        removeViewIfAttached(mMagnifierNodeView);
+                        mMagnifierNodeView = null;
+                    }
+                }
+            });
         }
         ((DesignerToolsApplication) getApplicationContext()).setColorPickerOn(false);
     }
@@ -171,13 +184,21 @@ public class ColorPickerOverlay extends Service {
         mNodeParams.y = y - nodeViewSize / 2;
 
         mMagnifierParams.x = x - magnifierWidth / 2;
-        mMagnifierParams.y = mNodeParams.y - magnifierHeight;
+        mMagnifierParams.y = mNodeParams.y - (magnifierHeight + nodeViewSize / 2);
 
         mMagnifierView = (MagnifierView) View.inflate(this, R.layout.color_picker_magnifier, null);
         mMagnifierView.setOnTouchListener(mDampenedOnTouchListener);
         mMagnifierNodeView = new MagnifierNodeView(this);
         mMagnifierNodeView.setOnTouchListener(mOnTouchListener);
         addOverlayViewsIfDetached();
+        mMagnifierView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                animateColorPickerIn();
+                mMagnifierView.getViewTreeObserver().removeOnPreDrawListener(this);
+                return false;
+            }
+        });
 
         mPreviewSampleWidth = res.getInteger(R.integer.color_picker_sample_width);
         mPreviewSampleHeight = res.getInteger(R.integer.color_picker_sample_height);
@@ -209,12 +230,129 @@ public class ColorPickerOverlay extends Service {
     }
 
     private void addOverlayViewsIfDetached () {
-        if (mMagnifierView != null && !mMagnifierView.isAttachedToWindow()) {
-            mWindowManager.addView(mMagnifierView, mMagnifierParams);
-        }
         if (mMagnifierNodeView != null && !mMagnifierNodeView.isAttachedToWindow()) {
             mWindowManager.addView(mMagnifierNodeView, mNodeParams);
         }
+        if (mMagnifierView != null && !mMagnifierView.isAttachedToWindow()) {
+            mWindowManager.addView(mMagnifierView, mMagnifierParams);
+        }
+    }
+
+    private void animateColorPickerIn() {
+        mMagnifierView.setScaleX(0);
+        mMagnifierView.setScaleY(0);
+        mMagnifierNodeView.setVisibility(View.GONE);
+
+        final int startX = mMagnifierParams.x + (mMagnifierParams.width - mNodeParams.width) / 2;
+        final int startY = mMagnifierParams.y + (mMagnifierParams.height - mNodeParams.height) / 2;
+        final int endX = mNodeParams.x;
+        final int endY = mNodeParams.y;
+        mNodeParams.x = startX;
+        mNodeParams.y = startY;
+        mWindowManager.updateViewLayout(mMagnifierNodeView, mNodeParams);
+        final ValueAnimator animator = ObjectAnimator.ofFloat(null, "", 0f, 1f);
+        animator.setDuration(200);
+        animator.setInterpolator(new FastOutSlowInInterpolator());
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float fraction = valueAnimator.getAnimatedFraction();
+                mNodeParams.x = startX + (int) (fraction * (endX - startX));
+                mNodeParams.y = startY + (int) (fraction * (endY - startY));
+                mWindowManager.updateViewLayout(mMagnifierNodeView, mNodeParams);
+            }
+        });
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+                mAnimating = true;
+                mMagnifierNodeView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                mAnimating = false;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+            }
+        });
+
+        mMagnifierView.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setInterpolator(new FastOutSlowInInterpolator())
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        animator.start();
+                    }
+                });
+
+    }
+
+    private void animateColorPickerOut(final Runnable endAction) {
+        final int endX = mMagnifierParams.x + (mMagnifierParams.width - mNodeParams.width) / 2;
+        final int endY = mMagnifierParams.y + (mMagnifierParams.height - mNodeParams.height) / 2;
+        final int startX = mNodeParams.x;
+        final int startY = mNodeParams.y;
+        mNodeParams.x = startX;
+        mNodeParams.y = startY;
+        mWindowManager.updateViewLayout(mMagnifierNodeView, mNodeParams);
+        final ValueAnimator animator = ObjectAnimator.ofFloat(null, "", 0f, 1f);
+        animator.setDuration(200);
+        animator.setInterpolator(new FastOutSlowInInterpolator());
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float fraction = valueAnimator.getAnimatedFraction();
+                mNodeParams.x = startX + (int) (fraction * (endX - startX));
+                mNodeParams.y = startY + (int) (fraction * (endY - startY));
+                mWindowManager.updateViewLayout(mMagnifierNodeView, mNodeParams);
+            }
+        });
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+                mAnimating = true;
+                mMagnifierNodeView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                mAnimating = false;
+                mMagnifierNodeView.setVisibility(View.GONE);
+                mNodeParams.x = startX;
+                mNodeParams.y = startY;
+                mMagnifierView.animate()
+                        .scaleX(0)
+                        .scaleY(0)
+                        .setInterpolator(new FastOutSlowInInterpolator())
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (endAction != null) {
+                                    endAction.run();
+                                }
+                            }
+                        });
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+            }
+        });
+        animator.start();
     }
 
     public Bitmap getScreenBitmapRegion(Image image, Rect region) {
@@ -327,10 +465,10 @@ public class ColorPickerOverlay extends Service {
             synchronized (mScreenCaptureLock) {
                 Image newImage = reader.acquireNextImage();
                 if (newImage != null) {
-                    if (mMagnifierView != null) {
+                    if (!mAnimating && mMagnifierView != null) {
                         mMagnifierView.setPixels(getScreenBitmapRegion(newImage, mPreviewArea));
-                        newImage.close();
                     }
+                    newImage.close();
                 }
             }
         }
@@ -349,13 +487,19 @@ public class ColorPickerOverlay extends Service {
                     stopSelf();
                 }
             } else if (ACTION_HIDE_PICKER.equals(action)) {
-                removeOverlayViewsIfAttached();
-                teardownMediaProjection();
-                updateNotification(false);
+                animateColorPickerOut(new Runnable() {
+                    @Override
+                    public void run() {
+                        removeOverlayViewsIfAttached();
+                        teardownMediaProjection();
+                        updateNotification(false);
+                    }
+                });
             } else if (ACTION_SHOW_PICKER.equals(action)) {
                 addOverlayViewsIfDetached();
                 setupMediaProjection();
                 updateNotification(true);
+                animateColorPickerIn();
             }
         }
     };
