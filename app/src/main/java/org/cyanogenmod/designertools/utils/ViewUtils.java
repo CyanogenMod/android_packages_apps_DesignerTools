@@ -21,8 +21,14 @@ import android.view.WindowManager;
 public class ViewUtils {
 
     public static int getWindowType() {
+        return getWindowType(false);
+    }
+
+    public static int getWindowType(boolean useSystemAlert) {
         return (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1)
-                ? WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY
+                ? (useSystemAlert
+                    ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
+                    : WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY)
                 : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
     }
 }

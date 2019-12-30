@@ -168,14 +168,14 @@ public class ColorPickerOverlay extends Service {
 
         mNodeParams = new WindowManager.LayoutParams(
                 nodeViewSize, nodeViewSize,
-                ViewUtils.getWindowType(),
+                ViewUtils.getWindowType(true),
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
                         WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSLUCENT);
         mNodeParams.gravity = Gravity.TOP | Gravity.LEFT;
         mMagnifierParams = new WindowManager.LayoutParams(
                 magnifierWidth, magnifierHeight,
-                ViewUtils.getWindowType(),
+                ViewUtils.getWindowType(true),
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
                         WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSLUCENT);
