@@ -43,4 +43,10 @@
     <color name="creditsBackground">#f9f9f9</color>
     <color name="screenshot_info_background_color">#263238</color>
 
+    <color name="colorPickerNodeReticleColor">#50ffffff</color>
+    <color name="colorPickerNodeOutlineColor">#80ffffff</color>
+    <color name="colorPickerNodeFillColor">#80000000</color>
+    <color name="colorPickerNodeClearColor">#00000000</color>
+    <color name="colorPickerMagnifierGridColor">#ff000000</color>
+
 </resources>

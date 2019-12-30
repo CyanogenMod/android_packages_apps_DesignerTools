@@ -67,13 +67,13 @@ public class MockupOverlayCardFragmnt extends DesignerToolCardFragment {
                 getResources().getColor(R.color.colorMockupOverlayCardTint)));
 
         View v =inflater.inflate(R.layout.mockup_overlay_content, mCardContent);
-        mPortraitImage = (ImageView) v.findViewById(R.id.portrait_image);
+        mPortraitImage = v.findViewById(R.id.portrait_image);
         mPortraitImage.setImageBitmap(MockupUtils.getPortraitMockup(getContext()));
         mPortraitImage.setOnClickListener(mImageClickListener);
-        mLandscapeImage = (ImageView) v.findViewById(R.id.landscape_image);
+        mLandscapeImage = v.findViewById(R.id.landscape_image);
         mLandscapeImage.setImageBitmap(MockupUtils.getLandscapeMockup(getContext()));
         mLandscapeImage.setOnClickListener(mImageClickListener);
-        mReset = (Button) v.findViewById(R.id.reset);
+        mReset = v.findViewById(R.id.reset);
         mReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,8 +87,8 @@ public class MockupOverlayCardFragmnt extends DesignerToolCardFragment {
                 }
             }
         });
-        mOpacityText = (TextView) v.findViewById(R.id.opacity_text);
-        mOpacityLevel = (SeekBar) v.findViewById(R.id.opacity);
+        mOpacityText = v.findViewById(R.id.opacity_text);
+        mOpacityLevel = v.findViewById(R.id.opacity);
         mOpacityLevel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

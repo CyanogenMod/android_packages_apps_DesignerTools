@@ -44,24 +44,24 @@ public class MagnifierNodeView extends View {
         float twoDp = 2f * dm.density;
         mReticlePaint = new Paint();
         mReticlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mReticlePaint.setColor(0x50ffffff);
+        mReticlePaint.setColor(context.getColor(R.color.colorPickerNodeReticleColor));
         mReticlePaint.setStrokeWidth(twoDp);
         mReticlePaint.setStyle(Paint.Style.STROKE);
 
         mOutlinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mOutlinePaint.setColor(0x80ffffff);
+        mOutlinePaint.setColor(context.getColor(R.color.colorPickerNodeOutlineColor));
         mOutlinePaint.setStrokeWidth(twoDp);
         mOutlinePaint.setStyle(Paint.Style.STROKE);
         mOutlinePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
 
         mFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mFillPaint.setColor(0x80000000);
+        mFillPaint.setColor(context.getColor(R.color.colorPickerNodeFillColor));
         mFillPaint.setStrokeWidth(twoDp);
         mFillPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mFillPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DARKEN));
 
         mClearPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mClearPaint.setColor(0);
+        mClearPaint.setColor(context.getColor(R.color.colorPickerNodeClearColor));
         mClearPaint.setStrokeWidth(twoDp);
         mClearPaint.setStyle(Paint.Style.FILL);
         mClearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));

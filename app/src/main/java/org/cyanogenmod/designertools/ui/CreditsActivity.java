@@ -36,8 +36,6 @@ public class CreditsActivity extends Activity {
         super.onCreate(savedInstanceState);
         overridePendingTransition(0, 0);
         setContentView(R.layout.activity_credits);
-        if (savedInstanceState == null) {
-        }
     }
 
     private void circularRevealActivity(View v) {

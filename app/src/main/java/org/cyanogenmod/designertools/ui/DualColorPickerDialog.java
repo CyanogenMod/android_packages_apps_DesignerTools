@@ -46,11 +46,11 @@ public class DualColorPickerDialog extends DialogFragment {
 
         initColorPickerViews();
 
-        mViewPager = (ViewPager) v.findViewById(R.id.view_pager);
+        mViewPager = v.findViewById(R.id.view_pager);
         mAdapter = new ColorPickerPagerAdapter();
         mViewPager.setAdapter(mAdapter);
 
-        mPageIndicator = (CirclePageIndicator) v.findViewById(R.id.view_pager_indicator);
+        mPageIndicator = v.findViewById(R.id.view_pager_indicator);
         mPageIndicator.setViewPager(mViewPager);
         mPageIndicator.setFillColor(getContext().getColor(R.color.colorGridOverlayCardTint));
 

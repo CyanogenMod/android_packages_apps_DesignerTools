@@ -8,7 +8,6 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Region;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -40,11 +39,11 @@ public class DualColorPicker extends View {
         super(context, attrs, defStyleAttr, defStyleRes);
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.DualColorPicker, 0, 0);
         int primaryColor = ta.getColor(R.styleable.DualColorPicker_primaryColor,
-                GridPreferences.getGridLineColor(context, getResources()
-                .getColor(R.color.dualColorPickerDefaultPrimaryColor)));
+                GridPreferences.getGridLineColor(context,
+                        context.getColor(R.color.dualColorPickerDefaultPrimaryColor)));
         int secondaryColor = ta.getColor(R.styleable.DualColorPicker_primaryColor,
-                GridPreferences.getKeylineColor(context, getResources()
-                .getColor(R.color.dualColorPickerDefaultSecondaryColor)));
+                GridPreferences.getKeylineColor(context,
+                        context.getColor(R.color.dualColorPickerDefaultSecondaryColor)));
 
         mPrimaryFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         mPrimaryFillPaint.setStyle(Paint.Style.FILL);

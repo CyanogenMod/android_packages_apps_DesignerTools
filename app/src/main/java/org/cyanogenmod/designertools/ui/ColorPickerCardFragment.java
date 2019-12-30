@@ -40,7 +40,7 @@ public class ColorPickerCardFragment extends DesignerToolCardFragment {
         setTitleSummary(R.string.header_summary_color_picker);
         setIconResource(R.drawable.ic_qs_colorpicker_on);
         base.setBackgroundTintList(ColorStateList.valueOf(
-                getResources().getColor(R.color.colorColorPickerCardTint)));
+                getActivity().getColor(R.color.colorColorPickerCardTint)));
 
         return base;
     }

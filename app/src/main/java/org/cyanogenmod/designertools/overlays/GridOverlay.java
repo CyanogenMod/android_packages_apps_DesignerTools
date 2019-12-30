@@ -206,7 +206,6 @@ public class GridOverlay extends Service {
         private boolean mShowGrid;
         private boolean mShowKeylines;
 
-        private float mGridLineWidth;
         private float mColumnSize;
         private float mRowSize;
         private float mDensity;
@@ -216,10 +215,10 @@ public class GridOverlay extends Service {
             super(context);
 
             mDensity = getResources().getDisplayMetrics().density;
-            mGridLineWidth = mDensity;
             mGridPaint = new Paint();
             mGridPaint.setColor(ColorUtils.getGridLineColor(context));
-            mGridPaint.setStrokeWidth(mGridLineWidth);
+            float gridLineWidth = mDensity;
+            mGridPaint.setStrokeWidth(gridLineWidth);
             mKeylinePaint = new Paint();
             mKeylinePaint.setColor(ColorUtils.getKeylineColor(context));
 

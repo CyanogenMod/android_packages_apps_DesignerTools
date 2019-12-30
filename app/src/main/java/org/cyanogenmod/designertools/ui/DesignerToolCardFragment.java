@@ -49,11 +49,11 @@ public class DesignerToolCardFragment extends Fragment
         inflater.cloneInContext(ctx);
         View v = inflater.inflate(R.layout.card_layout, container, true);
         mParentLayout = v.findViewById(R.id.parent_layout);
-        mIcon = (ImageView) v.findViewById(R.id.header_icon);
-        mHeaderTitle = (TextView) v.findViewById(R.id.header_title);
-        mHeaderSummary = (TextView) v.findViewById(R.id.header_summary);
-        mEnabledSwitch = (Switch) v.findViewById(R.id.enable_switch);
-        mCardContent = (FrameLayout) v.findViewById(R.id.card_content);
+        mIcon = v.findViewById(R.id.header_icon);
+        mHeaderTitle = v.findViewById(R.id.header_title);
+        mHeaderSummary = v.findViewById(R.id.header_summary);
+        mEnabledSwitch = v.findViewById(R.id.enable_switch);
+        mCardContent = v.findViewById(R.id.card_content);
 
         mEnabledSwitch.setOnCheckedChangeListener(this);
 

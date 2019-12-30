@@ -67,14 +67,14 @@ public class MagnifierView extends FrameLayout {
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
         mGridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mGridPaint.setColor(0xff000000);
+        mGridPaint.setColor(context.getColor(R.color.colorPickerMagnifierGridColor));
         mGridPaint.setAlpha(128);
         mGridPaint.setStyle(Paint.Style.STROKE);
         mGridPaint.setStrokeWidth(1f * dm.density);
         mGridPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DARKEN));
 
         mPixelOutlinePaint = new Paint();
-        mPixelOutlinePaint.setColor(0xff000000);
+        mPixelOutlinePaint.setColor(context.getColor(R.color.colorPickerMagnifierGridColor));
         mPixelOutlinePaint.setStyle(Paint.Style.STROKE);
         mPixelOutlinePaint.setStrokeWidth(2f * dm.density);
         mPixelOutlinePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DARKEN));
@@ -94,7 +94,7 @@ public class MagnifierView extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mColorValueTextView = (TextView) findViewById(R.id.color_value);
+        mColorValueTextView = findViewById(R.id.color_value);
         mColorValueTextView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

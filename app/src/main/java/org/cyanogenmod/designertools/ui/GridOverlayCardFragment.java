@@ -62,13 +62,13 @@ public class GridOverlayCardFragment extends DesignerToolCardFragment
                 context.getColor(R.color.colorGridOverlayCardTint)));
 
         View v = inflater.inflate(R.layout.grid_overlay_content, mCardContent, true);
-        mIncludeKeylines = (CheckBox) v.findViewById(R.id.include_keylines);
-        mIncudeCustomGrid = (CheckBox) v.findViewById(R.id.include_custom_grid_size);
-        mColumnSizer = (SeekBar) v.findViewById(R.id.column_sizer);
+        mIncludeKeylines = v.findViewById(R.id.include_keylines);
+        mIncudeCustomGrid = v.findViewById(R.id.include_custom_grid_size);
+        mColumnSizer = v.findViewById(R.id.column_sizer);
         mColumnSizer.setProgress((GridPreferences.getGridColumnSize(getContext(), 8) - 4) / 2);
-        mRowSizer = (SeekBar) v.findViewById(R.id.row_sizer);
+        mRowSizer = v.findViewById(R.id.row_sizer);
         mRowSizer.setProgress((GridPreferences.getGridRowSize(getContext(), 8) - 4) / 2);
-        mGridPreview = (GridPreview) v.findViewById(R.id.grid_preview);
+        mGridPreview = v.findViewById(R.id.grid_preview);
         mGridPreview.setColumnSize(GridPreferences.getGridColumnSize(getContext(), 8));
         mGridPreview.setRowSize(GridPreferences.getGridRowSize(getContext(), 8));
 
@@ -97,7 +97,7 @@ public class GridOverlayCardFragment extends DesignerToolCardFragment
             }
         });
 
-        mDualColorPicker = (DualColorPicker) v.findViewById(R.id.color_picker);
+        mDualColorPicker = v.findViewById(R.id.color_picker);
         mDualColorPicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,8 +197,6 @@ public class GridOverlayCardFragment extends DesignerToolCardFragment
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-
-        }
+        public void onReceive(Context context, Intent intent) {}
     };
 }

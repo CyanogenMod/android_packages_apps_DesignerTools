@@ -75,7 +75,6 @@ public class ColorPickerOverlay extends Service {
     private WindowManager.LayoutParams mNodeParams;
     private WindowManager.LayoutParams mMagnifierParams;
 
-    private MediaProjectionManager mMediaProjectionManager;
     private MediaProjection mMediaProjection;
     private VirtualDisplay mVirtualDisplay;
     private ImageReader mImageReader;
@@ -407,8 +406,8 @@ public class ColorPickerOverlay extends Service {
         mImageReader = ImageReader.newInstance(size.x, size.y,
                 PixelFormat.RGBA_8888, 2);
         mImageReader.setOnImageAvailableListener(mImageAvailableListener, new Handler());
-        mMediaProjectionManager = getSystemService(MediaProjectionManager.class);
-        mMediaProjection = mMediaProjectionManager.getMediaProjection(app.getScreenRecordResultCode(),
+        MediaProjectionManager mediaProjectionManager = getSystemService(MediaProjectionManager.class);
+        mMediaProjection = mediaProjectionManager.getMediaProjection(app.getScreenRecordResultCode(),
                 app.getScreenRecordResultData());
         mVirtualDisplay = mMediaProjection.createVirtualDisplay(
                 ColorPickerOverlay.class.getSimpleName(),

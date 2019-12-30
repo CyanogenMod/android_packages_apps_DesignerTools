@@ -20,7 +20,6 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
-import android.util.Log;
 
 import org.cyanogenmod.designertools.DesignerToolsApplication;
 import org.cyanogenmod.designertools.R;
@@ -28,8 +27,6 @@ import org.cyanogenmod.designertools.utils.LaunchUtils;
 
 @TargetApi(Build.VERSION_CODES.N)
 public class MockOverlayTileService extends TileService {
-    private static final String TAG = MockOverlayTileService.class.getSimpleName();
-
     public MockOverlayTileService() {
         super();
     }
