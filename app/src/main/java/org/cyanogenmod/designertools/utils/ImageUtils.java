@@ -59,6 +59,6 @@ public class ImageUtils {
         if (bmp == null || path == null) return false;
 
         FileOutputStream outputStream = new FileOutputStream(path);
-        return bmp.compress(Bitmap.CompressFormat.JPEG, 80, outputStream);
+        return bmp.compress(Bitmap.CompressFormat.PNG, 80, outputStream);
     }
 }
