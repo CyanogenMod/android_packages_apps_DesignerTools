@@ -15,15 +15,11 @@
  */
 package org.cyanogenmod.designertools.qs;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import org.cyanogenmod.designertools.DesignerToolsApplication;
-import org.cyanogenmod.designertools.overlays.ColorPickerOverlay;
-import org.cyanogenmod.designertools.ui.ScreenRecordRequestActivity;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils.ColorPickerPreferences;
 import org.cyanogenmod.designertools.R;
@@ -83,20 +79,6 @@ public class ColorPickerQuickSettingsTile {
                     publishColorPickerTile(context, OnOffTileState.STATE_OFF);
                     ColorPickerPreferences.setColorPickerActive(context, false);
                 }
-            }
-        }
-
-        private void startColorPickerOrRequestPermission(Context context) {
-            DesignerToolsApplication app =
-                    (DesignerToolsApplication) context.getApplicationContext();
-            if (app.getScreenRecordResultCode() == Activity.RESULT_OK && app.getScreenRecordResultData() != null) {
-                Intent newIntent = new Intent(context, ColorPickerOverlay.class);
-                context.startService(newIntent);
-                ColorPickerPreferences.setColorPickerActive(context, true);
-            } else {
-                Intent intent = new Intent(context, ScreenRecordRequestActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
             }
         }
     }
