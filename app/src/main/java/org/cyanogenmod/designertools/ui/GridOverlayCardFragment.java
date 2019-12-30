@@ -132,7 +132,6 @@ public class GridOverlayCardFragment extends DesignerToolCardFragment
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked == getApplicationContext().getGridOverlayOn()) return;
         if (isChecked) {
             LaunchUtils.lauchGridOverlayOrPublishTile(getContext(),
                     GridPreferences.getGridOverlayActive(getContext(), false)

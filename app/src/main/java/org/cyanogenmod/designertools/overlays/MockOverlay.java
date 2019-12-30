@@ -29,21 +29,24 @@ import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.IBinder;
+import android.support.v7.widget.AppCompatImageView;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 import org.cyanogenmod.designertools.DesignerToolsApplication;
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.qs.MockQuickSettingsTile;
 import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.utils.MockupUtils;
+import org.cyanogenmod.designertools.utils.NotificationUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils.MockPreferences;
+import org.cyanogenmod.designertools.utils.ViewUtils;
 
 public class MockOverlay extends Service {
     private static final int NOTIFICATION_ID = MockOverlay.class.hashCode();
+    private static final String CHANNEL_ID = "DesignerTools.MockOverlay";
 
     private static final String ACTION_HIDE_OVERLAY = "hide_mock_overlay";
     private static final String ACTION_SHOW_OVERLAY = "show_mock_overlay";
@@ -89,7 +92,7 @@ public class MockOverlay extends Service {
         mWindowManager.getDefaultDisplay().getRealSize(size);
         mParams = new WindowManager.LayoutParams(
                 size.x, size.y,
-                WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
+                ViewUtils.getWindowType(),
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
@@ -125,19 +128,20 @@ public class MockOverlay extends Service {
     }
 
     private Notification getPersistentNotification(boolean actionIsHide) {
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0,
-                new Intent(actionIsHide ? ACTION_HIDE_OVERLAY : ACTION_SHOW_OVERLAY), 0);
-        Notification.Builder builder = new Notification.Builder(this);
-        String text = getString(actionIsHide ? R.string.notif_content_hide_mock_overlay
+        int icon = actionIsHide ? R.drawable.ic_qs_overlay_on
+                : R.drawable.ic_qs_overlay_off;
+        final String contentText = getString(actionIsHide ? R.string.notif_content_hide_mock_overlay
                 : R.string.notif_content_show_mock_overlay);
-        builder.setPriority(Notification.PRIORITY_MIN)
-                .setSmallIcon(actionIsHide ? R.drawable.ic_qs_overlay_on
-                        : R.drawable.ic_qs_overlay_off)
-                .setContentTitle(getString(R.string.mock_qs_tile_label))
-                .setContentText(text)
-                .setStyle(new Notification.BigTextStyle().bigText(text))
-                .setContentIntent(pi);
-        return builder.build();
+        final PendingIntent pi = PendingIntent.getBroadcast(this, 0,
+                new Intent(actionIsHide ? ACTION_HIDE_OVERLAY : ACTION_SHOW_OVERLAY), 0);
+
+        return NotificationUtils.createForegroundServiceNotification(
+                this,
+                CHANNEL_ID,
+                icon,
+                getString(R.string.mock_qs_tile_label),
+                contentText,
+                pi);
     }
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -182,7 +186,7 @@ public class MockOverlay extends Service {
         });
     }
 
-    static class MockOverlayView extends ImageView {
+    static class MockOverlayView extends AppCompatImageView {
         public MockOverlayView(Context context) {
             super(context);
         }

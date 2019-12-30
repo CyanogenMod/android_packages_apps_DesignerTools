@@ -49,12 +49,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 
 import org.cyanogenmod.designertools.DesignerToolsApplication;
 import org.cyanogenmod.designertools.qs.ColorPickerQuickSettingsTile;
 import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.R;
+import org.cyanogenmod.designertools.utils.NotificationUtils;
+import org.cyanogenmod.designertools.utils.ViewUtils;
 import org.cyanogenmod.designertools.widget.MagnifierNodeView;
 import org.cyanogenmod.designertools.widget.MagnifierView;
 
@@ -62,6 +64,7 @@ import java.nio.ByteBuffer;
 
 public class ColorPickerOverlay extends Service {
     private static final int NOTIFICATION_ID = ColorPickerOverlay.class.hashCode();
+    private static final String CHANNEL_ID = "DesignerTools.ColorPickerOverlay";
 
     private static final String ACTION_HIDE_PICKER = "hide_picker";
     private static final String ACTION_SHOW_PICKER = "show_picker";
@@ -165,14 +168,14 @@ public class ColorPickerOverlay extends Service {
 
         mNodeParams = new WindowManager.LayoutParams(
                 nodeViewSize, nodeViewSize,
-                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
+                ViewUtils.getWindowType(),
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
                         WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSLUCENT);
         mNodeParams.gravity = Gravity.TOP | Gravity.LEFT;
         mMagnifierParams = new WindowManager.LayoutParams(
                 magnifierWidth, magnifierHeight,
-                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
+                ViewUtils.getWindowType(),
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
                         WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSLUCENT);
@@ -241,6 +244,7 @@ public class ColorPickerOverlay extends Service {
     private void animateColorPickerIn() {
         mMagnifierView.setScaleX(0);
         mMagnifierView.setScaleY(0);
+        mMagnifierView.setVisibility(View.VISIBLE);
         mMagnifierNodeView.setVisibility(View.GONE);
 
         final int startX = mMagnifierParams.x + (mMagnifierParams.width - mNodeParams.width) / 2;
@@ -252,7 +256,7 @@ public class ColorPickerOverlay extends Service {
         mWindowManager.updateViewLayout(mMagnifierNodeView, mNodeParams);
         final ValueAnimator animator = ObjectAnimator.ofFloat(null, "", 0f, 1f);
         animator.setDuration(200);
-        animator.setInterpolator(new FastOutSlowInInterpolator());
+        animator.setInterpolator(new OvershootInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -286,7 +290,8 @@ public class ColorPickerOverlay extends Service {
         mMagnifierView.animate()
                 .scaleX(1f)
                 .scaleY(1f)
-                .setInterpolator(new FastOutSlowInInterpolator())
+                .setInterpolator(new OvershootInterpolator())
+                .setDuration(250)
                 .withEndAction(new Runnable() {
                     @Override
                     public void run() {
@@ -297,6 +302,12 @@ public class ColorPickerOverlay extends Service {
     }
 
     private void animateColorPickerOut(final Runnable endAction) {
+        if (mMagnifierView == null || !mMagnifierView.isAttachedToWindow()) {
+            if (endAction != null) {
+                endAction.run();
+                return;
+            }
+        }
         final int endX = mMagnifierParams.x + (mMagnifierParams.width - mNodeParams.width) / 2;
         final int endY = mMagnifierParams.y + (mMagnifierParams.height - mNodeParams.height) / 2;
         final int startX = mNodeParams.x;
@@ -336,6 +347,7 @@ public class ColorPickerOverlay extends Service {
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
+                                mMagnifierView.setVisibility(View.GONE);
                                 if (endAction != null) {
                                     endAction.run();
                                 }
@@ -425,20 +437,20 @@ public class ColorPickerOverlay extends Service {
     }
 
     private Notification getPersistentNotification(boolean actionIsHide) {
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0,
+        int icon = actionIsHide ? R.drawable.ic_qs_colorpicker_on
+                : R.drawable.ic_qs_colorpicker_off;
+        final String contentText = getString(actionIsHide ? R.string.notif_content_hide_picker
+                : R.string.notif_content_show_picker);
+        final PendingIntent pi = PendingIntent.getBroadcast(this, 0,
                 new Intent(actionIsHide ? ACTION_HIDE_PICKER : ACTION_SHOW_PICKER), 0);
-        Notification.Builder builder = new Notification.Builder(this);
-        builder.setPriority(Notification.PRIORITY_MIN)
-                .setSmallIcon(actionIsHide ? R.drawable.ic_qs_colorpicker_on
-                        : R.drawable.ic_qs_colorpicker_off)
-                .setContentTitle(getString(R.string.color_picker_qs_tile_label))
-                .setContentText(getString(actionIsHide ? R.string.notif_content_hide_picker
-                        : R.string.notif_content_show_picker))
-                .setStyle(new Notification.BigTextStyle().bigText(
-                        getString(actionIsHide ? R.string.notif_content_hide_picker
-                        : R.string.notif_content_show_picker)))
-                .setContentIntent(pi);
-        return builder.build();
+
+        return NotificationUtils.createForegroundServiceNotification(
+                this,
+                CHANNEL_ID,
+                icon,
+                getString(R.string.color_picker_qs_tile_label),
+                contentText,
+                pi);
     }
 
     private void updateMagnifierViewPosition(int x, int y, float angle) {
@@ -509,7 +521,7 @@ public class ColorPickerOverlay extends Service {
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    mMagnifierNodeView.setVisibility(View.INVISIBLE);
+                    mMagnifierNodeView.setAlpha(0);
                     break;
                 case MotionEvent.ACTION_MOVE:
                     final float rawX = event.getRawX();
@@ -521,7 +533,7 @@ public class ColorPickerOverlay extends Service {
                     break;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
-                    mMagnifierNodeView.setVisibility(View.VISIBLE);
+                    mMagnifierNodeView.setAlpha(1.0f);
                     break;
             }
             return true;

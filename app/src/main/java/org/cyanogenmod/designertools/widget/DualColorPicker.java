@@ -75,18 +75,22 @@ public class DualColorPicker extends View {
         canvas.drawColor(0);
 
         // draw the left half
-        canvas.clipRect(0, 0, widthDiv2, height, Region.Op.REPLACE);
+        canvas.save();
+        canvas.clipRect(0, 0, widthDiv2, height);
         canvas.drawCircle(widthDiv2, heightDiv2, radius, mPrimaryFillPaint);
         canvas.drawCircle(widthDiv2, heightDiv2, radius, mPrimaryStrokePaint);
         canvas.drawLine(widthDiv2 - STROKE_WIDTH / 2f, heightDiv2 - radius,
                 widthDiv2 - STROKE_WIDTH / 2f, heightDiv2 + radius, mPrimaryStrokePaint);
+        canvas.restore();
 
         /// draw the right half
-        canvas.clipRect(widthDiv2, 0, width, height, Region.Op.REPLACE);
+        canvas.save();
+        canvas.clipRect(widthDiv2, 0, width, height);
         canvas.drawCircle(widthDiv2, heightDiv2, radius, mSecondaryFillPaint);
         canvas.drawCircle(widthDiv2, heightDiv2, radius, mSecondaryStrokePaint);
         canvas.drawLine(widthDiv2 + STROKE_WIDTH / 2f, heightDiv2 - radius,
                 widthDiv2 + STROKE_WIDTH / 2f, heightDiv2 + radius, mSecondaryStrokePaint);
+        canvas.restore();
     }
 
     private int getDarkenedColor(int color) {

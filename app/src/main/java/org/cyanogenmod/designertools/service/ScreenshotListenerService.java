@@ -30,6 +30,7 @@ import android.util.Log;
 
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.ui.DesignerToolsActivity;
+import org.cyanogenmod.designertools.utils.NotificationUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils.ScreenshotPreferences;
 
@@ -37,6 +38,7 @@ import java.io.File;
 
 public class ScreenshotListenerService extends Service
         implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final String CHANNEL_ID = "DesignerTools.ScreenshotListenerService";
 
     private ScreenShotObserver mScreenshotObserver;
 
@@ -83,17 +85,17 @@ public class ScreenshotListenerService extends Service
     }
 
     private Notification getPersistentNotification() {
-        PendingIntent pi = PendingIntent.getActivity(this, 0,
+        final PendingIntent pi = PendingIntent.getActivity(this, 0,
                 new Intent(this, DesignerToolsActivity.class), 0);
-        Notification.Builder builder = new Notification.Builder(this);
-        String text = getString(R.string.notif_content_screenshot_info);
-        builder.setPriority(Notification.PRIORITY_MIN)
-                .setSmallIcon(R.drawable.ic_qs_screenshotinfo_on)
-                .setContentTitle(getString(R.string.screenshot_qs_tile_label))
-                .setContentText(text)
-                .setStyle(new Notification.BigTextStyle().bigText(text))
-                .setContentIntent(pi);
-        return builder.build();
+        final String contentText = getString(R.string.notif_content_screenshot_info);
+
+        return NotificationUtils.createForegroundServiceNotification(
+                this,
+                CHANNEL_ID,
+                R.drawable.ic_qs_screenshotinfo_on,
+                getString(R.string.screenshot_qs_tile_label),
+                contentText,
+                pi);
     }
 
     private class ScreenShotObserver extends ContentObserver {
@@ -105,10 +107,14 @@ public class ScreenshotListenerService extends Service
                 MediaStore.Images.Media.DATE_TAKEN
         };
         private static final String SORT_ORDER = MediaStore.Images.Media.DATE_ADDED + " DESC";
-        private static final long DEFAULT_DETECT_WINDOW_MS = 1000;
+        private static final long ADD_INFO_DELAY_MS = 1000;
+
+        private String mLastProcessedImage = null;
+        private Handler mHandler;
 
         ScreenShotObserver(Handler handler) {
             super(handler);
+            mHandler = handler;
         }
 
         @Override
@@ -121,21 +127,24 @@ public class ScreenshotListenerService extends Service
                     if (cursor != null && cursor.moveToFirst()) {
                         String path = cursor.getString(
                                 cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-                        long dateAdded = cursor.getLong(cursor.getColumnIndex(
-                                MediaStore.Images.Media.DATE_TAKEN));
-                        long currentTime = System.currentTimeMillis();
                         if (path.toLowerCase().contains("screenshot") &&
-                                Math.abs(currentTime - dateAdded) <=
-                                        DEFAULT_DETECT_WINDOW_MS) {
-                            Intent intent =
+                            !path.equals(mLastProcessedImage)) {
+                            mLastProcessedImage = path;
+                            final Intent intent =
                                     new Intent(ScreenshotListenerService.this,
                                             ScreenshotInfoService.class);
                             intent.putExtra(ScreenshotInfoService.EXTRA_PATH, path);
-                            startService(intent);
+                            // give time for screenshot to be fully written to storage
+                            mHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    startService(intent);
+                                }
+                            }, ADD_INFO_DELAY_MS);
                         }
                     }
                 } catch (Exception e) {
-                    Log.d(TAG, "open cursor fail");
+                    Log.e(TAG, "open cursor fail");
                 } finally {
                     if (cursor != null) {
                         cursor.close();

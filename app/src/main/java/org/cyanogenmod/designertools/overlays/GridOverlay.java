@@ -42,11 +42,14 @@ import org.cyanogenmod.designertools.qs.GridQuickSettingsTile;
 import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.utils.ColorUtils;
+import org.cyanogenmod.designertools.utils.NotificationUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
+import org.cyanogenmod.designertools.utils.ViewUtils;
 
 public class GridOverlay extends Service {
     private static final int NOTIFICATION_ID = GridOverlay.class.hashCode();
+    private static final String CHANNEL_ID = "DesignerTools.GridOverlay";
 
     private static final String ACTION_HIDE_OVERLAY = "hide_grid_overlay";
     private static final String ACTION_SHOW_OVERLAY = "show_grid_overlay";
@@ -89,7 +92,7 @@ public class GridOverlay extends Service {
     private void setup() {
         mParams = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
+                ViewUtils.getWindowType(),
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT);
         mOverlayView = new GridOverlayView(this);
@@ -124,19 +127,20 @@ public class GridOverlay extends Service {
     }
 
     private Notification getPersistentNotification(boolean actionIsHide) {
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0,
-                new Intent(actionIsHide ? ACTION_HIDE_OVERLAY : ACTION_SHOW_OVERLAY), 0);
-        Notification.Builder builder = new Notification.Builder(this);
-        String text = getString(actionIsHide ? R.string.notif_content_hide_grid_overlay
+        int icon = actionIsHide ? R.drawable.ic_qs_grid_on
+                : R.drawable.ic_qs_grid_off;
+        final String contentText = getString(actionIsHide ? R.string.notif_content_hide_grid_overlay
                 : R.string.notif_content_show_grid_overlay);
-        builder.setPriority(Notification.PRIORITY_MIN)
-                .setSmallIcon(actionIsHide ? R.drawable.ic_qs_grid_on
-                        : R.drawable.ic_qs_grid_off)
-                .setContentTitle(getString(R.string.grid_qs_tile_label))
-                .setContentText(text)
-                .setStyle(new Notification.BigTextStyle().bigText(text))
-                .setContentIntent(pi);
-        return builder.build();
+        final PendingIntent pi = PendingIntent.getBroadcast(this, 0,
+                new Intent(actionIsHide ? ACTION_HIDE_OVERLAY : ACTION_SHOW_OVERLAY), 0);
+
+        return NotificationUtils.createForegroundServiceNotification(
+                this,
+                CHANNEL_ID,
+                icon,
+                getString(R.string.grid_qs_tile_label),
+                contentText,
+                pi);
     }
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -199,8 +203,8 @@ public class GridOverlay extends Service {
         private Rect mSecondKeylineMarkerBounds;
         private Rect mThirdKeylineMarkerBounds;
 
-        private boolean mShowGrid = false;
-        private boolean mShowKeylines = false;
+        private boolean mShowGrid;
+        private boolean mShowKeylines;
 
         private float mGridLineWidth;
         private float mColumnSize;
@@ -274,10 +278,12 @@ public class GridOverlay extends Service {
             x = dm.widthPixels - (int)(16 * dm.density);
             mThirdKeylineMarkerBounds = new Rect(x, y, x + width, y + height);
 
-            mFirstKeylineRect = new RectF(0, 0, 16 * dm.density, dm.heightPixels);
-            mSecondKeylineRect = new RectF(56 * dm.density, 0, 72 * dm.density, dm.heightPixels);
+            int keylineHeight = getHeight();
+            mFirstKeylineRect = new RectF(0, 0, 16 * dm.density, keylineHeight);
+            mSecondKeylineRect = new RectF(56 * dm.density, 0, 72 * dm.density,
+                    keylineHeight);
             mThirdKeylineRect = new RectF(dm.widthPixels - 16 * dm.density, 0, dm.widthPixels,
-                    dm.heightPixels);
+                    keylineHeight);
         }
 
         @Override

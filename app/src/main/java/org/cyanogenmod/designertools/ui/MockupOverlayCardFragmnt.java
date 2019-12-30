@@ -120,7 +120,6 @@ public class MockupOverlayCardFragmnt extends DesignerToolCardFragment {
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked == getApplicationContext().getMockOverlayOn()) return;
         if (isChecked) {
             LaunchUtils.lauchMockPverlayOrPublishTile(getContext(),
                     MockPreferences.getMockOverlayActive(getContext(), false)

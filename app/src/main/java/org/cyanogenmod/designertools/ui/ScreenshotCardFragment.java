@@ -67,8 +67,6 @@ public class ScreenshotCardFragment extends DesignerToolCardFragment {
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (!isVisible()) return;
-
         if (isChecked) {
             if (getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
