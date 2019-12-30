@@ -159,7 +159,7 @@ public class ScreenshotInfoService extends IntentService {
                     "IO Exception when getting kernel version for Device Info screen",
                     e);
 
-            return "Unavailable";
+            return "";
         }
     }
 
@@ -180,11 +180,11 @@ public class ScreenshotInfoService extends IntentService {
         Matcher m = Pattern.compile(PROC_VERSION_REGEX).matcher(rawKernelVersion);
         if (!m.matches()) {
             Log.e(TAG, "Regex did not match on /proc/version: " + rawKernelVersion);
-            return "Unavailable";
+            return "";
         } else if (m.groupCount() < 4) {
             Log.e(TAG, "Regex match on /proc/version only returned " + m.groupCount()
                     + " groups");
-            return "Unavailable";
+            return "";
         }
         return m.group(1) + "\n" +                 // 3.0.31-g6fb96c9
                 m.group(2) + " " + m.group(3) + "\n" + // x@y.com #1
