@@ -35,6 +35,8 @@ public class ColorPickerTileService extends TileService {
     @Override
     public void onTileAdded() {
         super.onTileAdded();
+        final Tile tile = getQsTile();
+        tile.setIcon(Icon.createWithResource(this, R.drawable.ic_qs_colorpicker_on));
     }
 
     @Override
@@ -69,9 +71,7 @@ public class ColorPickerTileService extends TileService {
 
     private void updateTile(boolean isOn) {
         final Tile tile = getQsTile();
-        tile.setIcon(Icon.createWithResource(this, isOn
-                ? R.drawable.ic_qs_colorpicker_on
-                : R.drawable.ic_qs_colorpicker_off));
+        tile.setState(isOn ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
         tile.updateTile();
     }
 }

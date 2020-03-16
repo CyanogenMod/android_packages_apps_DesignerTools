@@ -34,6 +34,8 @@ public class GridOverlayTileService extends TileService {
     @Override
     public void onTileAdded() {
         super.onTileAdded();
+        final Tile tile = getQsTile();
+        tile.setIcon(Icon.createWithResource(this, R.drawable.ic_qs_grid_on));
     }
 
     @Override
@@ -67,9 +69,7 @@ public class GridOverlayTileService extends TileService {
 
     private void updateTile(boolean isOn) {
         final Tile tile = getQsTile();
-        tile.setIcon(Icon.createWithResource(this, isOn
-                ? R.drawable.ic_qs_grid_on
-                : R.drawable.ic_qs_grid_off));
+        tile.setState(isOn ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
         tile.updateTile();
     }
 }
