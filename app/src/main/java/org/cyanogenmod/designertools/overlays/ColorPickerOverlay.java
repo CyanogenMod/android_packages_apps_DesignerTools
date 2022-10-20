@@ -440,8 +440,11 @@ public class ColorPickerOverlay extends Service {
                 : R.drawable.ic_qs_colorpicker_off;
         final String contentText = getString(actionIsHide ? R.string.notif_content_hide_picker
                 : R.string.notif_content_show_picker);
-        final PendingIntent pi = PendingIntent.getBroadcast(this, 0,
-                new Intent(actionIsHide ? ACTION_HIDE_PICKER : ACTION_SHOW_PICKER), 0);
+        final PendingIntent pi = PendingIntent.getBroadcast(
+                this,
+                0,
+                new Intent(actionIsHide ? ACTION_HIDE_PICKER : ACTION_SHOW_PICKER),
+                PendingIntent.FLAG_IMMUTABLE);
 
         return NotificationUtils.createForegroundServiceNotification(
                 this,

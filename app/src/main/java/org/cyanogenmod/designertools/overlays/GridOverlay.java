@@ -131,8 +131,11 @@ public class GridOverlay extends Service {
                 : R.drawable.ic_qs_grid_off;
         final String contentText = getString(actionIsHide ? R.string.notif_content_hide_grid_overlay
                 : R.string.notif_content_show_grid_overlay);
-        final PendingIntent pi = PendingIntent.getBroadcast(this, 0,
-                new Intent(actionIsHide ? ACTION_HIDE_OVERLAY : ACTION_SHOW_OVERLAY), 0);
+        final PendingIntent pi = PendingIntent.getBroadcast(
+                this,
+                0,
+                new Intent(actionIsHide ? ACTION_HIDE_OVERLAY : ACTION_SHOW_OVERLAY),
+                PendingIntent.FLAG_IMMUTABLE);
 
         return NotificationUtils.createForegroundServiceNotification(
                 this,
