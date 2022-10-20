@@ -153,6 +153,7 @@ public class ColorPickerOverlay extends Service {
     }
 
     private void setup() {
+        startForeground(NOTIFICATION_ID, getPersistentNotification(true));
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         setupMediaProjection();
 
@@ -217,7 +218,6 @@ public class ColorPickerOverlay extends Service {
         filter.addAction(ACTION_HIDE_PICKER);
         filter.addAction(ACTION_SHOW_PICKER);
         registerReceiver(mReceiver, filter);
-        startForeground(NOTIFICATION_ID, getPersistentNotification(true));
     }
 
     private void removeViewIfAttached(View v) {

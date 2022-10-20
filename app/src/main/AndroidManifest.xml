@@ -85,7 +85,9 @@
 
         <service android:name=".overlays.MockOverlay" />
 
-        <service android:name=".overlays.ColorPickerOverlay" />
+        <service
+            android:name=".overlays.ColorPickerOverlay"
+            android:foregroundServiceType="mediaProjection" />
 
         <service android:name=".service.ScreenshotInfoService" />
 
