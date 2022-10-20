@@ -47,8 +47,6 @@ public class StartOverlayActivity extends Activity {
                 startOverlayService(mOverlayType);
                 finish();
             } else {
-                Intent closeDialogsIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-                sendBroadcast(closeDialogsIntent);
                 Intent newIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + getPackageName()));
                 startActivityForResult(newIntent, REQUEST_OVERLAY_PERMSSISION);
