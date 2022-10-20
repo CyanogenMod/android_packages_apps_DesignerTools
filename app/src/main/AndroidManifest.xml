@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.cyanogenmod.designertools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="cyanogenmod.permission.PUBLISH_CUSTOM_TILE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -17,7 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.DesignerToolsActivity">
+        <activity
+            android:name=".ui.DesignerToolsActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,19 +48,25 @@
             android:exported="false"
             android:excludeFromRecents="true" />
 
-        <receiver android:name=".qs.GridQuickSettingsTile$ClickBroadcastReceiver">
+        <receiver
+            android:name=".qs.GridQuickSettingsTile$ClickBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="org.cyanogenmod.designertools.action.TOGGLE_GRID_STATE" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".qs.MockQuickSettingsTile$ClickBroadcastReceiver">
+        <receiver
+            android:name=".qs.MockQuickSettingsTile$ClickBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="org.cyanogenmod.designertools.action.TOGGLE_MOCK_STATE" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".qs.ColorPickerQuickSettingsTile$ClickBroadcastReceiver">
+        <receiver
+            android:name=".qs.ColorPickerQuickSettingsTile$ClickBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="org.cyanogenmod.designertools.action.TOGGLE_COLOR_PICKER_STATE" />
             </intent-filter>
@@ -88,6 +95,7 @@
             android:name=".service.qs.GridOverlayTileService"
             android:icon="@drawable/ic_qs_grid_off"
             android:label="@string/grid_qs_tile_label"
+            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -98,6 +106,7 @@
             android:name=".service.qs.MockOverlayTileService"
             android:icon="@drawable/ic_qs_overlay_off"
             android:label="@string/mock_qs_tile_label"
+            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -108,6 +117,7 @@
             android:name=".service.qs.ColorPickerTileService"
             android:icon="@drawable/ic_qs_colorpicker_off"
             android:label="@string/color_picker_qs_tile_label"
+            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
