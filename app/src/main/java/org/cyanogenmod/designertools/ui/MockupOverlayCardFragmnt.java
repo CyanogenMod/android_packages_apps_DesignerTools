@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import org.cyanogenmod.designertools.R;
 
-import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.utils.ImageUtils;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
 import org.cyanogenmod.designertools.utils.MockupUtils;
@@ -121,12 +120,9 @@ public class MockupOverlayCardFragmnt extends DesignerToolCardFragment {
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
-            LaunchUtils.lauchMockPverlayOrPublishTile(getContext(),
-                    MockPreferences.getMockOverlayActive(getContext(), false)
-                            ? OnOffTileState.STATE_ON
-                            : OnOffTileState.STATE_OFF);
+            LaunchUtils.launchMockOverlay(getContext());
         } else {
-            LaunchUtils.cancelMockOverlayOrUnpublishTile(getContext());
+            LaunchUtils.cancelMockOverlay(getContext());
         }
     }
 

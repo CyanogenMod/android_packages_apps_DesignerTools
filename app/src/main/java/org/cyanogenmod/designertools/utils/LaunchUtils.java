@@ -18,15 +18,11 @@ package org.cyanogenmod.designertools.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import org.cyanogenmod.designertools.DesignerToolsApplication;
 import org.cyanogenmod.designertools.overlays.ColorPickerOverlay;
 import org.cyanogenmod.designertools.overlays.GridOverlay;
 import org.cyanogenmod.designertools.overlays.MockOverlay;
-import org.cyanogenmod.designertools.qs.ColorPickerQuickSettingsTile;
-import org.cyanogenmod.designertools.qs.GridQuickSettingsTile;
-import org.cyanogenmod.designertools.qs.MockQuickSettingsTile;
 import org.cyanogenmod.designertools.ui.ScreenRecordRequestActivity;
 import org.cyanogenmod.designertools.ui.StartOverlayActivity;
 import org.cyanogenmod.designertools.utils.PreferenceUtils.ColorPickerPreferences;
@@ -34,28 +30,8 @@ import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
 import org.cyanogenmod.designertools.utils.PreferenceUtils.MockPreferences;
 
 public class LaunchUtils {
-    public static boolean isCyanogenMod(Context context) {
-        return context.getPackageManager().hasSystemFeature("org.cyanogenmod.theme");
-    }
-
-    public static void publishGridOverlayTile(Context context, int state) {
-        GridQuickSettingsTile.publishGridTile(context, state);
-    }
-
     public static void launchGridOverlay(Context context) {
         startOverlayActivity(context, StartOverlayActivity.GRID_OVERLAY);
-    }
-
-    public static void lauchGridOverlayOrPublishTile(Context context, int state) {
-        if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            publishGridOverlayTile(context, state);
-        } else {
-            launchGridOverlay(context);
-        }
-    }
-
-    public static void unpublishGridOverlayTile(Context context) {
-        GridQuickSettingsTile.unpublishGridTile(context);
     }
 
     public static void cancelGridOverlay(Context context) {
@@ -65,33 +41,8 @@ public class LaunchUtils {
         GridPreferences.setGridQsTileEnabled(context, false);
     }
 
-    public static void cancelGridOverlayOrUnpublishTile(Context context) {
-        if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            unpublishGridOverlayTile(context);
-            GridQuickSettingsTile.unpublishGridTile(context);
-        } else {
-            cancelGridOverlay(context);
-        }
-    }
-
-    public static void publishMockOverlayTile(Context context, int state) {
-        MockQuickSettingsTile.publishMockTile(context, state);
-    }
-
     public static void launchMockOverlay(Context context) {
         startOverlayActivity(context, StartOverlayActivity.MOCK_OVERLAY);
-    }
-
-    public static void lauchMockPverlayOrPublishTile(Context context, int state) {
-        if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            publishMockOverlayTile(context, state);
-        } else {
-            launchMockOverlay(context);
-        }
-    }
-
-    public static void unpublishMockOverlayTile(Context context) {
-        MockQuickSettingsTile.unpublishMockTile(context);
     }
 
     public static void cancelMockOverlay(Context context) {
@@ -101,32 +52,8 @@ public class LaunchUtils {
         MockPreferences.setMockQsTileEnabled(context, false);
     }
 
-    public static void cancelMockOverlayOrUnpublishTile(Context context) {
-        if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            unpublishMockOverlayTile(context);
-        } else {
-            cancelMockOverlay(context);
-        }
-    }
-
-    public static void publishColorPickerTile(Context context, int state) {
-        ColorPickerQuickSettingsTile.publishColorPickerTile(context, state);
-    }
-
     public static void launchColorPickerOverlay(Context context) {
         startOverlayActivity(context, StartOverlayActivity.COLOR_PICKER_OVERLAY);
-    }
-
-    public static void lauchColorPickerOrPublishTile(Context context, int state) {
-        if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            publishColorPickerTile(context, state);
-        } else {
-            launchColorPickerOverlay(context);
-        }
-    }
-
-    public static void unpublishColorPickerTile(Context context) {
-        ColorPickerQuickSettingsTile.unpublishColorPickerTile(context);
     }
 
     public static void cancelColorPickerOverlay(Context context) {
@@ -134,14 +61,6 @@ public class LaunchUtils {
         context.stopService(newIntent);
         ColorPickerPreferences.setColorPickerActive(context, false);
         ColorPickerPreferences.setColorPickerQsTileEnabled(context, false);
-    }
-
-    public static void cancelColorPickerOrUnpublishTile(Context context) {
-        if (isCyanogenMod(context) && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            unpublishColorPickerTile(context);
-        } else {
-            cancelColorPickerOverlay(context);
-        }
     }
 
     public static void startColorPickerOrRequestPermission(Context context) {

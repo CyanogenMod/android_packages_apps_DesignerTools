@@ -32,7 +32,6 @@ import android.widget.SeekBar;
 
 import org.cyanogenmod.designertools.R;
 
-import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.utils.ColorUtils;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
@@ -133,12 +132,9 @@ public class GridOverlayCardFragment extends DesignerToolCardFragment
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
-            LaunchUtils.lauchGridOverlayOrPublishTile(getContext(),
-                    GridPreferences.getGridOverlayActive(getContext(), false)
-                            ? OnOffTileState.STATE_ON
-                            : OnOffTileState.STATE_OFF);
+            LaunchUtils.launchGridOverlay(getContext());
         } else {
-            LaunchUtils.cancelGridOverlayOrUnpublishTile(getContext());
+            LaunchUtils.cancelGridOverlay(getContext());
         }
     }
 

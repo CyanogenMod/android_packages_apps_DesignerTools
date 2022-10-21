@@ -19,10 +19,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -36,8 +34,6 @@ import android.view.WindowManager;
 
 import org.cyanogenmod.designertools.DesignerToolsApplication;
 import org.cyanogenmod.designertools.R;
-import org.cyanogenmod.designertools.qs.MockQuickSettingsTile;
-import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.utils.MockupUtils;
 import org.cyanogenmod.designertools.utils.NotificationUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
@@ -79,10 +75,6 @@ public class MockOverlay extends Service {
                 }
             });
         }
-        if (mReceiver != null) {
-            unregisterReceiver(mReceiver);
-            mReceiver = null;
-        }
         ((DesignerToolsApplication) getApplicationContext()).setMockOverlayOn(false);
     }
 
@@ -108,11 +100,6 @@ public class MockOverlay extends Service {
                 return false;
             }
         });
-        IntentFilter filter = new IntentFilter(MockQuickSettingsTile.ACTION_TOGGLE_STATE);
-        filter.addAction(MockQuickSettingsTile.ACTION_UNPUBLISH);
-        filter.addAction(ACTION_HIDE_OVERLAY);
-        filter.addAction(ACTION_SHOW_OVERLAY);
-        registerReceiver(mReceiver, filter);
         startForeground(NOTIFICATION_ID, getPersistentNotification(true));
     }
 
@@ -146,31 +133,6 @@ public class MockOverlay extends Service {
                 contentText,
                 pi);
     }
-
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (MockQuickSettingsTile.ACTION_UNPUBLISH.equals(action)) {
-                stopSelf();
-            } else if (MockQuickSettingsTile.ACTION_TOGGLE_STATE.equals(action)) {
-                int state =
-                        intent.getIntExtra(OnOffTileState.EXTRA_STATE, OnOffTileState.STATE_OFF);
-                if (state == OnOffTileState.STATE_ON) {
-                    stopSelf();
-                }
-            } else if (ACTION_HIDE_OVERLAY.equals(action)) {
-                hideOverlay(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateNotification(false);
-                    }
-                });
-            } else if (ACTION_SHOW_OVERLAY.equals(action)) {
-                showOverlay();
-            }
-        }
-    };
 
     private void showOverlay() {
         mWindowManager.addView(mOverlayView, mParams);

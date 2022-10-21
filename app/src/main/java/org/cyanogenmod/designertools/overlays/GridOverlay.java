@@ -19,10 +19,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -38,8 +36,6 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 
 import org.cyanogenmod.designertools.DesignerToolsApplication;
-import org.cyanogenmod.designertools.qs.GridQuickSettingsTile;
-import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.utils.ColorUtils;
 import org.cyanogenmod.designertools.utils.NotificationUtils;
@@ -82,10 +78,6 @@ public class GridOverlay extends Service {
                 }
             });
         }
-        if (mReceiver != null) {
-            unregisterReceiver(mReceiver);
-            mReceiver = null;
-        }
         ((DesignerToolsApplication) getApplicationContext()).setGridOverlayOn(false);
     }
 
@@ -107,11 +99,6 @@ public class GridOverlay extends Service {
                 return false;
             }
         });
-        IntentFilter filter = new IntentFilter(GridQuickSettingsTile.ACTION_TOGGLE_STATE);
-        filter.addAction(GridQuickSettingsTile.ACTION_UNPUBLISH);
-        filter.addAction(ACTION_HIDE_OVERLAY);
-        filter.addAction(ACTION_SHOW_OVERLAY);
-        registerReceiver(mReceiver, filter);
         startForeground(NOTIFICATION_ID, getPersistentNotification(true));
     }
 
@@ -144,37 +131,6 @@ public class GridOverlay extends Service {
                 getString(R.string.grid_qs_tile_label),
                 contentText,
                 pi);
-    }
-
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (GridQuickSettingsTile.ACTION_UNPUBLISH.equals(action)) {
-                stopSelf();
-            } else if (GridQuickSettingsTile.ACTION_TOGGLE_STATE.equals(action)) {
-                int state =
-                        intent.getIntExtra(OnOffTileState.EXTRA_STATE, OnOffTileState.STATE_OFF);
-                if (state == OnOffTileState.STATE_ON) {
-                    stopSelf();
-                }
-            } else if (ACTION_HIDE_OVERLAY.equals(action)) {
-                hideOverlay(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateNotification(false);
-                    }
-                });
-            } else if (ACTION_SHOW_OVERLAY.equals(action)) {
-                showOverlay();
-            }
-        }
-    };
-
-    private void showOverlay() {
-        mWindowManager.addView(mOverlayView, mParams);
-        updateNotification(true);
-        mOverlayView.animate().alpha(1f);
     }
 
     private void hideOverlay(final Runnable endAction) {

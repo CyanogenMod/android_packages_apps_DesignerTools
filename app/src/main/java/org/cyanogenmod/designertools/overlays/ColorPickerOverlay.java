@@ -22,10 +22,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -52,8 +49,6 @@ import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 
 import org.cyanogenmod.designertools.DesignerToolsApplication;
-import org.cyanogenmod.designertools.qs.ColorPickerQuickSettingsTile;
-import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.utils.NotificationUtils;
 import org.cyanogenmod.designertools.utils.ViewUtils;
@@ -118,10 +113,6 @@ public class ColorPickerOverlay extends Service {
         mMediaProjection = null;
         mVirtualDisplay = null;
 
-        if (mReceiver != null) {
-            unregisterReceiver(mReceiver);
-            mReceiver = null;
-        }
         if (mImageReader != null) {
             mImageReader.close();
             mImageReader = null;
@@ -212,12 +203,6 @@ public class ColorPickerOverlay extends Service {
         mLastPosition = new PointF();
         mStartPosition = new PointF();
         mDampeningFactor = DAMPENING_FACTOR_DP * dm.density;
-
-        IntentFilter filter = new IntentFilter(ColorPickerQuickSettingsTile.ACTION_TOGGLE_STATE);
-        filter.addAction(ColorPickerQuickSettingsTile.ACTION_UNPUBLISH);
-        filter.addAction(ACTION_HIDE_PICKER);
-        filter.addAction(ACTION_SHOW_PICKER);
-        registerReceiver(mReceiver, filter);
     }
 
     private void removeViewIfAttached(View v) {
@@ -484,36 +469,6 @@ public class ColorPickerOverlay extends Service {
                     }
                     newImage.close();
                 }
-            }
-        }
-    };
-
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (ColorPickerQuickSettingsTile.ACTION_UNPUBLISH.equals(action)) {
-                stopSelf();
-            } else if (ColorPickerQuickSettingsTile.ACTION_TOGGLE_STATE.equals(action)) {
-                int state =
-                        intent.getIntExtra(OnOffTileState.EXTRA_STATE, OnOffTileState.STATE_OFF);
-                if (state == OnOffTileState.STATE_ON) {
-                    stopSelf();
-                }
-            } else if (ACTION_HIDE_PICKER.equals(action)) {
-                animateColorPickerOut(new Runnable() {
-                    @Override
-                    public void run() {
-                        removeOverlayViewsIfAttached();
-                        teardownMediaProjection();
-                        updateNotification(false);
-                    }
-                });
-            } else if (ACTION_SHOW_PICKER.equals(action)) {
-                addOverlayViewsIfDetached();
-                setupMediaProjection();
-                updateNotification(true);
-                animateColorPickerIn();
             }
         }
     };

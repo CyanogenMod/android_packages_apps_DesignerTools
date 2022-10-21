@@ -15,9 +15,7 @@
  */
 package org.cyanogenmod.designertools.service.qs;
 
-import android.annotation.TargetApi;
 import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
@@ -25,7 +23,6 @@ import org.cyanogenmod.designertools.DesignerToolsApplication;
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
 
-@TargetApi(Build.VERSION_CODES.N)
 public class MockOverlayTileService extends TileService {
     public MockOverlayTileService() {
         super();
@@ -59,9 +56,9 @@ public class MockOverlayTileService extends TileService {
         super.onClick();
         boolean isOn = ((DesignerToolsApplication) getApplicationContext()).getMockOverlayOn();
         if (isOn) {
-            LaunchUtils.cancelMockOverlayOrUnpublishTile(this);
+            LaunchUtils.cancelMockOverlay(this);
         } else {
-            LaunchUtils.lauchMockPverlayOrPublishTile(this, 0);
+            LaunchUtils.launchMockOverlay(this);
         }
         updateTile(!isOn);
     }

@@ -81,7 +81,7 @@ public class ScreenshotInfoService extends IntentService {
                 DateFormat.getTimeInstance().format(date));
         String device = Build.MODEL;
         String codeName = Build.DEVICE;
-        String build = getCmVersionString(this);
+        String build = Build.ID;
         String density = getDensityString();
         String kernelVersion = getFormattedKernelVersion();
 
@@ -220,33 +220,5 @@ public class ScreenshotInfoService extends IntentService {
             pfd.close();
         }
         newBmp.recycle();
-    }
-
-    private String getCmVersionString(Context context) {
-        if (LaunchUtils.isCyanogenMod(context)) {
-            ClassLoader cl = context.getClassLoader();
-            Class SystemProperties = null;
-            try {
-                SystemProperties = cl.loadClass("android.os.SystemProperties");
-                //Parameters Types
-                Class[] paramTypes = new Class[1];
-                paramTypes[0] = String.class;
-
-                Method get = SystemProperties.getMethod("get", paramTypes);
-
-                //Parameters
-                Object[] params = new Object[1];
-                params[0] = "ro.cm.version";
-
-                return (String) get.invoke(SystemProperties, params);
-            } catch (ClassNotFoundException |
-                    NoSuchMethodException |
-                    IllegalAccessException |
-                    InvocationTargetException e) {
-            /* don't care, will fallback to Build.ID */
-            }
-        }
-
-        return Build.ID;
     }
 }
