@@ -38,8 +38,6 @@ import org.cyanogenmod.designertools.utils.LaunchUtils;
 import org.cyanogenmod.designertools.utils.LayoutRenderUtils;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -88,17 +86,17 @@ public class ScreenshotInfoService extends IntentService {
         String kernelVersion = getFormattedKernelVersion();
 
         View pane = View.inflate(this, R.layout.screenshot_info, null);
-        TextView tv = (TextView) pane.findViewById(R.id.date_time_info);
+        TextView tv = pane.findViewById(R.id.date_time_info);
         tv.setText(dateTime);
-        tv = (TextView) pane.findViewById(R.id.device_name);
+        tv = pane.findViewById(R.id.device_name);
         tv.setText(device);
-        tv = (TextView) pane.findViewById(R.id.code_name);
+        tv = pane.findViewById(R.id.code_name);
         tv.setText(codeName);
-        tv = (TextView) pane.findViewById(R.id.build);
+        tv = pane.findViewById(R.id.build);
         tv.setText(build);
-        tv = (TextView) pane.findViewById(R.id.density);
+        tv = pane.findViewById(R.id.density);
         tv.setText(density);
-        tv = (TextView) pane.findViewById(R.id.kernel);
+        tv = pane.findViewById(R.id.kernel);
         tv.setText(kernelVersion);
 
         return LayoutRenderUtils.renderViewToBitmap(pane);

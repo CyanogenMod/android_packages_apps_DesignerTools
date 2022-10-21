@@ -21,6 +21,8 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +33,7 @@ import org.cyanogenmod.designertools.service.ScreenshotListenerService;
 import org.cyanogenmod.designertools.utils.PreferenceUtils.ScreenshotPreferences;
 
 public class ScreenshotCardFragment extends DesignerToolCardFragment {
+    private static final int REQUEST_CODE = 0x42;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +54,7 @@ public class ScreenshotCardFragment extends DesignerToolCardFragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
-        if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (hasRequiredPermissions()) {
             ScreenshotPreferences.setScreenshotInfoEnabled(getContext(), true);
             Intent newIntent = new Intent(getContext(), ScreenshotListenerService.class);
             getContext().startService(newIntent);
@@ -69,17 +72,18 @@ public class ScreenshotCardFragment extends DesignerToolCardFragment {
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
-            if (getActivity().checkSelfPermission(getReadPermission())
-                    == PackageManager.PERMISSION_GRANTED) {
+            if (hasRequiredPermissions()) {
                 ScreenshotPreferences.setScreenshotInfoEnabled(getContext(), true);
                 Intent newIntent = new Intent(getContext(), ScreenshotListenerService.class);
                 getContext().startService(newIntent);
             } else {
                 mEnabledSwitch.setChecked(false);
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 42);
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
                 } else {
-                    requestPermissions(new String[]{getReadPermission()}, 42);
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(intent);
                 }
             }
         } else {
@@ -87,9 +91,12 @@ public class ScreenshotCardFragment extends DesignerToolCardFragment {
         }
     }
 
-    private static String getReadPermission() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                ? Manifest.permission.READ_MEDIA_IMAGES
-                : Manifest.permission.READ_EXTERNAL_STORAGE;
+    private boolean hasRequiredPermissions() {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            return getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED;
+        } else {
+            return Environment.isExternalStorageManager();
+        }
     }
 }

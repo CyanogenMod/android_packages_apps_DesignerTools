@@ -34,8 +34,6 @@ import org.cyanogenmod.designertools.utils.NotificationUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils.ScreenshotPreferences;
 
-import java.io.File;
-
 public class ScreenshotListenerService extends Service
         implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String CHANNEL_ID = "DesignerTools.ScreenshotListenerService";
@@ -123,15 +121,13 @@ public class ScreenshotListenerService extends Service
         @Override
         public void onChange(boolean selfChange, Uri uri) {
             if (uri.toString().startsWith(EXTERNAL_CONTENT_URI_MATCHER)) {
-                Cursor cursor = null;
-                try {
-                    cursor = getContentResolver().query(uri, PROJECTION, null, null,
-                            SORT_ORDER);
+                try (Cursor cursor = getContentResolver().query(uri, PROJECTION, null, null,
+                        SORT_ORDER)) {
                     if (cursor != null && cursor.moveToFirst()) {
                         String path = cursor.getString(
-                                cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
                         if (path.substring(path.lastIndexOf("/") + 1).toLowerCase().startsWith("screenshot") &&
-                            !path.equals(mLastProcessedImage)) {
+                                !path.equals(mLastProcessedImage)) {
                             mLastProcessedImage = path;
                             final Intent intent =
                                     new Intent(ScreenshotListenerService.this,
@@ -147,11 +143,7 @@ public class ScreenshotListenerService extends Service
                         }
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "open cursor fail");
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
+                    Log.e(TAG, "open cursor fail", e);
                 }
             }
             super.onChange(selfChange, uri);
