@@ -16,13 +16,16 @@
 package org.cyanogenmod.designertools.service;
 
 import android.app.IntentService;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -40,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
@@ -51,7 +55,7 @@ public class ScreenshotInfoService extends IntentService {
     private static final String TAG = ScreenshotInfoService.class.getSimpleName();
     private static final String FILENAME_PROC_VERSION = "/proc/version";
 
-    public static final String EXTRA_PATH = "path";
+    public static final String EXTRA_URI = "uri";
 
     public ScreenshotInfoService() {
         super("ScreenshotInfoService");
@@ -59,20 +63,22 @@ public class ScreenshotInfoService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (intent.hasExtra(EXTRA_PATH)) {
-            File screenshot = new File(intent.getStringExtra(EXTRA_PATH));
-            Bitmap paneBmp = getInfoPane(screenshot);
-            Bitmap screenshotBmp = BitmapFactory.decodeFile(screenshot.getAbsolutePath());
-            try {
-                saveModifiedScreenshot(screenshotBmp, paneBmp, screenshot.getAbsolutePath());
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+        if (intent != null && intent.hasExtra((EXTRA_URI))) {
+            Uri uri = intent.getParcelableExtra(EXTRA_URI);
+            ContentResolver resolver = getApplicationContext()
+                    .getContentResolver();
+            try (InputStream stream = resolver.openInputStream(uri)) {
+                Bitmap paneBmp = getInfoPane();
+                Bitmap screenshotBmp = BitmapFactory.decodeStream(stream);
+                saveModifiedScreenshot(screenshotBmp, paneBmp, uri);
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to store screenshot info", e);
             }
         }
     }
 
-    private Bitmap getInfoPane(File screenshot) {
-        Date date = new Date(screenshot.lastModified());
+    private Bitmap getInfoPane() {
+        Date date = new Date();
         String dateTime = String.format("%s at %s", DateFormat.getDateInstance().format(date),
                 DateFormat.getTimeInstance().format(date));
         String device = Build.MODEL;
@@ -190,8 +196,11 @@ public class ScreenshotInfoService extends IntentService {
                 m.group(4);                            // Thu Jun 28 11:02:39 PDT 2012
     }
 
-    private void saveModifiedScreenshot(Bitmap screenshot, Bitmap infoPane, String filePath)
-            throws FileNotFoundException {
+    private void saveModifiedScreenshot(Bitmap screenshot, Bitmap infoPane, Uri uri)
+            throws IOException {
+        ContentResolver resolver = getApplicationContext().getContentResolver();
+        ParcelFileDescriptor pfd = resolver.openFileDescriptor(uri, "w");
+
         WindowManager wm = getSystemService(WindowManager.class);
         Point size = new Point();
         wm.getDefaultDisplay().getRealSize(size);
@@ -208,7 +217,10 @@ public class ScreenshotInfoService extends IntentService {
         canvas.drawBitmap(infoPane, screenshot.getWidth(), 0, null);
         screenshot.recycle();
         infoPane.recycle();
-        newBmp.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(filePath));
+        if (pfd != null) {
+            newBmp.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(pfd.getFileDescriptor()));
+            pfd.close();
+        }
         newBmp.recycle();
     }
 

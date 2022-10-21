@@ -85,8 +85,11 @@ public class ScreenshotListenerService extends Service
     }
 
     private Notification getPersistentNotification() {
-        final PendingIntent pi = PendingIntent.getActivity(this, 0,
-                new Intent(this, DesignerToolsActivity.class), 0);
+        final PendingIntent pi = PendingIntent.getActivity(
+                this,
+                0,
+                new Intent(this, DesignerToolsActivity.class),
+                PendingIntent.FLAG_IMMUTABLE);
         final String contentText = getString(R.string.notif_content_screenshot_info);
 
         return NotificationUtils.createForegroundServiceNotification(
@@ -127,13 +130,13 @@ public class ScreenshotListenerService extends Service
                     if (cursor != null && cursor.moveToFirst()) {
                         String path = cursor.getString(
                                 cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-                        if (path.toLowerCase().contains("screenshot") &&
+                        if (path.substring(path.lastIndexOf("/") + 1).toLowerCase().startsWith("screenshot") &&
                             !path.equals(mLastProcessedImage)) {
                             mLastProcessedImage = path;
                             final Intent intent =
                                     new Intent(ScreenshotListenerService.this,
                                             ScreenshotInfoService.class);
-                            intent.putExtra(ScreenshotInfoService.EXTRA_PATH, path);
+                            intent.putExtra(ScreenshotInfoService.EXTRA_URI, uri);
                             // give time for screenshot to be fully written to storage
                             mHandler.postDelayed(new Runnable() {
                                 @Override
