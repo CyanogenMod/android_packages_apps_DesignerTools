@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="cyanogenmod.permission.PUBLISH_CUSTOM_TILE" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
@@ -53,30 +52,6 @@
             android:theme="@style/TransparentTheme"
             android:exported="false"
             android:excludeFromRecents="true" />
-
-        <receiver
-            android:name=".qs.GridQuickSettingsTile$ClickBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="org.cyanogenmod.designertools.action.TOGGLE_GRID_STATE" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".qs.MockQuickSettingsTile$ClickBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="org.cyanogenmod.designertools.action.TOGGLE_MOCK_STATE" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".qs.ColorPickerQuickSettingsTile$ClickBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="org.cyanogenmod.designertools.action.TOGGLE_COLOR_PICKER_STATE" />
-            </intent-filter>
-        </receiver>
 
         <receiver
             android:name=".receiver.BootReceiver"
