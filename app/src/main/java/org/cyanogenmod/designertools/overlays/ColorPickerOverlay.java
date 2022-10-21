@@ -18,6 +18,7 @@ package org.cyanogenmod.designertools.overlays;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -383,6 +384,7 @@ public class ColorPickerOverlay extends Service {
         return bmp;
     }
 
+    @SuppressLint("WrongConstant")
     private void setupMediaProjection() {
         final DesignerToolsApplication app = (DesignerToolsApplication) getApplication();
         final DisplayMetrics dm = getResources().getDisplayMetrics();

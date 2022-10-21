@@ -3,6 +3,7 @@
  */
 package org.cyanogenmod.designertools.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -12,6 +13,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.SeekBar;
 
+@SuppressLint("AppCompatCustomView")
 public class VerticalSeekBar extends SeekBar {
 
     public VerticalSeekBar(Context context) {
