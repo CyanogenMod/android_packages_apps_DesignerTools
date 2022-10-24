@@ -16,11 +16,13 @@
 package org.cyanogenmod.designertools.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 
+import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.overlays.GridOverlay;
 import org.cyanogenmod.designertools.overlays.MockOverlay;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
@@ -28,7 +30,7 @@ import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
 import org.cyanogenmod.designertools.utils.PreferenceUtils.MockPreferences;
 
 public class StartOverlayActivity extends Activity {
-    private static final int REQUEST_OVERLAY_PERMSSISION = 42;
+    private static final int REQUEST_OVERLAY_PERMISSION = StartOverlayActivity.class.hashCode();
 
     public static final String EXTRA_OVERLAY_TYPE = "overlayType";
     public static final int GRID_OVERLAY = 0;
@@ -47,9 +49,7 @@ public class StartOverlayActivity extends Activity {
                 startOverlayService(mOverlayType);
                 finish();
             } else {
-                Intent newIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getPackageName()));
-                startActivityForResult(newIntent, REQUEST_OVERLAY_PERMSSISION);
+                showReasoningDialog();
             }
         } else {
             finish();
@@ -58,7 +58,7 @@ public class StartOverlayActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_OVERLAY_PERMSSISION) {
+        if (requestCode == REQUEST_OVERLAY_PERMISSION) {
             if (Settings.canDrawOverlays(this)) {
                 startOverlayService(mOverlayType);
             }
@@ -85,5 +85,26 @@ public class StartOverlayActivity extends Activity {
                 LaunchUtils.startColorPickerOrRequestPermission(this);
                 break;
         }
+    }
+
+    private void requestOverlayPermission() {
+        Intent newIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName()));
+        startActivityForResult(newIntent, REQUEST_OVERLAY_PERMISSION);
+    }
+
+    private void showReasoningDialog() {
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
+        builder.setTitle(R.string.dialog_request_overlay_permission_title)
+                .setMessage(R.string.dialog_request_overlay_permission_message)
+                .setPositiveButton(R.string.dialog_request_overlay_permission_grant, (dialog, which) -> {
+                    requestOverlayPermission();
+                })
+                .setNegativeButton(R.string.dialog_request_overlay_permission_deny, (dialog, which) -> {
+                    finish();
+                })
+                .setIcon(R.drawable.ic_launcher)
+                .show();
     }
 }
