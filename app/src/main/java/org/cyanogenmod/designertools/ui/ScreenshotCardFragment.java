@@ -16,6 +16,7 @@
 package org.cyanogenmod.designertools.ui;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -81,9 +82,7 @@ public class ScreenshotCardFragment extends DesignerToolCardFragment {
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
                     requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
                 } else {
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getApplicationContext().startActivity(intent);
+                    showReasoningDialog();
                 }
             }
         } else {
@@ -98,5 +97,24 @@ public class ScreenshotCardFragment extends DesignerToolCardFragment {
         } else {
             return Environment.isExternalStorageManager();
         }
+    }
+
+    private void requestAccessAllFilesPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        getApplicationContext().startActivity(intent);
+    }
+
+    private void showReasoningDialog() {
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Light_Dialog_Alert);
+        builder.setTitle(R.string.dialog_request_file_permission_title)
+                .setMessage(R.string.dialog_request_file_permission_message)
+                .setPositiveButton(R.string.dialog_request_file_permission_grant, (dialog, which) -> {
+                    requestAccessAllFilesPermission();
+                })
+                .setNegativeButton(R.string.dialog_request_file_permission_deny, (dialog, which) -> {})
+                .setIcon(R.drawable.ic_launcher)
+                .show();
     }
 }

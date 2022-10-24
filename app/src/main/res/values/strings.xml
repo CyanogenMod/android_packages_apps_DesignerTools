@@ -76,4 +76,11 @@
 
     <string name="color_copied_to_clipboard">Color value copied to clipboard</string>
 
+    <string name="dialog_request_file_permission_title">File Access Required</string>
+    <string name="dialog_request_file_permission_message">
+        Designer Tools requires \'All files access\' in order to write info to screenshots.  Clicking grant will take you to the \'All files access\' settings where you can then enable access for Designer Tools.
+    </string>
+    <string name="dialog_request_file_permission_grant">Let\'s go!</string>
+    <string name="dialog_request_file_permission_deny">I\'ll pass</string>
+
 </resources>
