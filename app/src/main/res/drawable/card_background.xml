@@ -18,6 +18,6 @@
     android:shape="rectangle">
 
     <corners
-        android:radius="2dp"/>
+        android:radius="16dp"/>
 
 </shape>

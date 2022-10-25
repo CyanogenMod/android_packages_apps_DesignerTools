@@ -26,7 +26,7 @@
     android:elevation="2dp"
     android:clipToPadding="false"
     android:background="@drawable/card_background"
-    android:outlineProvider="bounds">
+    android:outlineProvider="background">
 
     <include layout="@layout/card_header" />
 
