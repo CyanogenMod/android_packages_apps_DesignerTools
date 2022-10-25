@@ -107,7 +107,7 @@ public class ScreenshotCardFragment extends DesignerToolCardFragment {
 
     private void showReasoningDialog() {
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Light_Dialog_Alert);
+                new AlertDialog.Builder(getActivity(), R.style.AlertDialog);
         builder.setTitle(R.string.dialog_request_file_permission_title)
                 .setMessage(R.string.dialog_request_file_permission_message)
                 .setPositiveButton(R.string.dialog_request_file_permission_grant, (dialog, which) -> {

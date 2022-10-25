@@ -95,7 +95,7 @@ public class StartOverlayActivity extends Activity {
 
     private void showReasoningDialog() {
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
+                new AlertDialog.Builder(this, R.style.AlertDialog);
         builder.setTitle(R.string.dialog_request_overlay_permission_title)
                 .setMessage(R.string.dialog_request_overlay_permission_message)
                 .setPositiveButton(R.string.dialog_request_overlay_permission_grant, (dialog, which) -> {
