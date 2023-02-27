@@ -30,10 +30,6 @@ public class DesignerToolsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_designer_tools);
-        if (!LaunchUtils.isCyanogenMod(this)) {
-            TextView tv = (TextView) findViewById(R.id.qs_tiles_section);
-            tv.setText(R.string.overlays_section_text);
-        }
         View headerGlyph = findViewById(R.id.header_glyph);
         if (headerGlyph != null) {
             headerGlyph.setOnClickListener(mGlyphClickListener);

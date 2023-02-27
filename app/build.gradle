@@ -1,29 +1,38 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    compileSdk 33
 
     defaultConfig {
-        applicationId "com.cyngn.designertools"
-        minSdkVersion 23
-        targetSdkVersion 25
-        versionCode 2
-        versionName "2.0.0"
+        applicationId "com.scheffsblend.designertools"
+        minSdkVersion 24
+        targetSdkVersion 33
+        versionCode 6
+        versionName "2.2.2"
+        setProperty("archivesBaseName", "DesignerTools-$versionName")
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dependenciesInfo {
+        includeInApk true
+        includeInBundle true
+    }
+    buildToolsVersion '33.0.0'
+    namespace 'org.cyanogenmod.designertools'
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'org.cyanogenmod:platform.sdk:6.0'
-    compile 'com.larswerkman:lobsterpicker:1.0.1'
-    compile 'fr.avianey.com.viewpagerindicator:library:2.4.1.1@aar'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.larswerkman:lobsterpicker:1.0.1'
+    implementation 'fr.avianey.com.viewpagerindicator:library:2.4.1.1@aar'
 }

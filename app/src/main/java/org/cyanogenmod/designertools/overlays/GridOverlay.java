@@ -19,10 +19,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -38,14 +36,16 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 
 import org.cyanogenmod.designertools.DesignerToolsApplication;
-import org.cyanogenmod.designertools.qs.GridQuickSettingsTile;
-import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.R;
 import org.cyanogenmod.designertools.utils.ColorUtils;
+import org.cyanogenmod.designertools.utils.NotificationUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
+import org.cyanogenmod.designertools.utils.ViewUtils;
 
 public class GridOverlay extends Service {
     private static final int NOTIFICATION_ID = GridOverlay.class.hashCode();
+    private static final String CHANNEL_ID = "DesignerTools.GridOverlay";
 
     private static final String ACTION_HIDE_OVERLAY = "hide_grid_overlay";
     private static final String ACTION_SHOW_OVERLAY = "show_grid_overlay";
@@ -70,12 +70,13 @@ public class GridOverlay extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (mOverlayView != null) {
-            removeViewIfAttached(mOverlayView);
-            mOverlayView = null;
-        }
-        if (mReceiver != null) {
-            unregisterReceiver(mReceiver);
-            mReceiver = null;
+            hideOverlay(new Runnable() {
+                @Override
+                public void run() {
+                    removeViewIfAttached(mOverlayView);
+                    mOverlayView = null;
+                }
+            });
         }
         ((DesignerToolsApplication) getApplicationContext()).setGridOverlayOn(false);
     }
@@ -83,7 +84,7 @@ public class GridOverlay extends Service {
     private void setup() {
         mParams = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
+                ViewUtils.getWindowType(),
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT);
         mOverlayView = new GridOverlayView(this);
@@ -98,11 +99,6 @@ public class GridOverlay extends Service {
                 return false;
             }
         });
-        IntentFilter filter = new IntentFilter(GridQuickSettingsTile.ACTION_TOGGLE_STATE);
-        filter.addAction(GridQuickSettingsTile.ACTION_UNPUBLISH);
-        filter.addAction(ACTION_HIDE_OVERLAY);
-        filter.addAction(ACTION_SHOW_OVERLAY);
-        registerReceiver(mReceiver, filter);
         startForeground(NOTIFICATION_ID, getPersistentNotification(true));
     }
 
@@ -118,50 +114,23 @@ public class GridOverlay extends Service {
     }
 
     private Notification getPersistentNotification(boolean actionIsHide) {
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0,
-                new Intent(actionIsHide ? ACTION_HIDE_OVERLAY : ACTION_SHOW_OVERLAY), 0);
-        Notification.Builder builder = new Notification.Builder(this);
-        String text = getString(actionIsHide ? R.string.notif_content_hide_grid_overlay
+        int icon = actionIsHide ? R.drawable.ic_qs_grid_on
+                : R.drawable.ic_qs_grid_off;
+        final String contentText = getString(actionIsHide ? R.string.notif_content_hide_grid_overlay
                 : R.string.notif_content_show_grid_overlay);
-        builder.setPriority(Notification.PRIORITY_MIN)
-                .setSmallIcon(actionIsHide ? R.drawable.ic_qs_grid_on
-                        : R.drawable.ic_qs_grid_off)
-                .setContentTitle(getString(R.string.grid_qs_tile_label))
-                .setContentText(text)
-                .setStyle(new Notification.BigTextStyle().bigText(text))
-                .setContentIntent(pi);
-        return builder.build();
-    }
+        final PendingIntent pi = PendingIntent.getBroadcast(
+                this,
+                0,
+                new Intent(actionIsHide ? ACTION_HIDE_OVERLAY : ACTION_SHOW_OVERLAY),
+                PendingIntent.FLAG_IMMUTABLE);
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (GridQuickSettingsTile.ACTION_UNPUBLISH.equals(action)) {
-                stopSelf();
-            } else if (GridQuickSettingsTile.ACTION_TOGGLE_STATE.equals(action)) {
-                int state =
-                        intent.getIntExtra(OnOffTileState.EXTRA_STATE, OnOffTileState.STATE_OFF);
-                if (state == OnOffTileState.STATE_ON) {
-                    stopSelf();
-                }
-            } else if (ACTION_HIDE_OVERLAY.equals(action)) {
-                hideOverlay(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateNotification(false);
-                    }
-                });
-            } else if (ACTION_SHOW_OVERLAY.equals(action)) {
-                showOverlay();
-            }
-        }
-    };
-
-    private void showOverlay() {
-        mWindowManager.addView(mOverlayView, mParams);
-        updateNotification(true);
-        mOverlayView.animate().alpha(1f);
+        return NotificationUtils.createForegroundServiceNotification(
+                this,
+                CHANNEL_ID,
+                icon,
+                getString(R.string.grid_qs_tile_label),
+                contentText,
+                pi);
     }
 
     private void hideOverlay(final Runnable endAction) {
@@ -193,10 +162,9 @@ public class GridOverlay extends Service {
         private Rect mSecondKeylineMarkerBounds;
         private Rect mThirdKeylineMarkerBounds;
 
-        private boolean mShowGrid = false;
-        private boolean mShowKeylines = false;
+        private boolean mShowGrid;
+        private boolean mShowKeylines;
 
-        private float mGridLineWidth;
         private float mColumnSize;
         private float mRowSize;
         private float mDensity;
@@ -206,10 +174,10 @@ public class GridOverlay extends Service {
             super(context);
 
             mDensity = getResources().getDisplayMetrics().density;
-            mGridLineWidth = mDensity;
             mGridPaint = new Paint();
             mGridPaint.setColor(ColorUtils.getGridLineColor(context));
-            mGridPaint.setStrokeWidth(mGridLineWidth);
+            float gridLineWidth = mDensity;
+            mGridPaint.setStrokeWidth(gridLineWidth);
             mKeylinePaint = new Paint();
             mKeylinePaint.setColor(ColorUtils.getKeylineColor(context));
 
@@ -218,18 +186,17 @@ public class GridOverlay extends Service {
             mHorizontalMarkerRight = context.getDrawable(R.drawable.ic_marker_horiz_right);
             mVerticalMarker = context.getDrawable(R.drawable.ic_marker_vert);
 
-            SharedPreferences prefs = PreferenceUtils.getShardedPreferences(context);
-            mShowGrid = PreferenceUtils.getShowGrid(context, false);
-            mShowKeylines = PreferenceUtils.getShowKeylines(context, false);
+            mShowGrid = GridPreferences.getShowGrid(context, false);
+            mShowKeylines = GridPreferences.getShowKeylines(context, false);
 
-            boolean useCustom = PreferenceUtils.getUseCustomGridSize(getContext(),
+            boolean useCustom = GridPreferences.getUseCustomGridSize(getContext(),
                     false);
             int defColumnSize = getResources().getInteger(
                     R.integer.default_column_size);
             int defRowSize = getResources().getInteger(R.integer.default_row_size);
-            mColumnSize = mDensity * (!useCustom ? defColumnSize : PreferenceUtils
+            mColumnSize = mDensity * (!useCustom ? defColumnSize : GridPreferences
                     .getGridColumnSize(getContext(), defColumnSize));
-            mRowSize = mDensity * (!useCustom ? defRowSize : PreferenceUtils
+            mRowSize = mDensity * (!useCustom ? defRowSize : GridPreferences
                     .getGridRowSize(getContext(), defRowSize));
             mKeylineWidth = 1.5f * mDensity;
         }
@@ -269,10 +236,12 @@ public class GridOverlay extends Service {
             x = dm.widthPixels - (int)(16 * dm.density);
             mThirdKeylineMarkerBounds = new Rect(x, y, x + width, y + height);
 
-            mFirstKeylineRect = new RectF(0, 0, 16 * dm.density, dm.heightPixels);
-            mSecondKeylineRect = new RectF(56 * dm.density, 0, 72 * dm.density, dm.heightPixels);
+            int keylineHeight = getHeight();
+            mFirstKeylineRect = new RectF(0, 0, 16 * dm.density, keylineHeight);
+            mSecondKeylineRect = new RectF(56 * dm.density, 0, 72 * dm.density,
+                    keylineHeight);
             mThirdKeylineRect = new RectF(dm.widthPixels - 16 * dm.density, 0, dm.widthPixels,
-                    dm.heightPixels);
+                    keylineHeight);
         }
 
         @Override
@@ -295,43 +264,43 @@ public class GridOverlay extends Service {
                     @Override
                     public void onSharedPreferenceChanged(SharedPreferences prefs,
                             String key) {
-                        if (PreferenceUtils.KEY_SHOW_GRID.equals(key)) {
+                        if (GridPreferences.KEY_SHOW_GRID.equals(key)) {
                             boolean enabled =
-                                    prefs.getBoolean(PreferenceUtils.KEY_SHOW_GRID, false);
+                                    prefs.getBoolean(GridPreferences.KEY_SHOW_GRID, false);
                             if (mShowGrid != enabled) {
                                 mShowGrid = enabled;
                                 invalidate();
                             }
-                        } else if (PreferenceUtils.KEY_SHOW_KEYLINES.equals(key)) {
+                        } else if (GridPreferences.KEY_SHOW_KEYLINES.equals(key)) {
                             boolean enabled =
-                                    prefs.getBoolean(PreferenceUtils.KEY_SHOW_KEYLINES, false);
+                                    prefs.getBoolean(GridPreferences.KEY_SHOW_KEYLINES, false);
                             if (enabled != mShowKeylines) {
                                 mShowKeylines = enabled;
                                 invalidate();
                             }
-                        } else if (PreferenceUtils.KEY_GRID_COLUMN_SIZE.equals(key)) {
-                            mColumnSize = mDensity * PreferenceUtils.getGridColumnSize(getContext(),
+                        } else if (GridPreferences.KEY_GRID_COLUMN_SIZE.equals(key)) {
+                            mColumnSize = mDensity * GridPreferences.getGridColumnSize(getContext(),
                                     getResources().getInteger(R.integer.default_column_size));
                             invalidate();
-                        } else if (PreferenceUtils.KEY_GRID_ROW_SIZE.equals(key)) {
-                            mRowSize = mDensity * PreferenceUtils.getGridRowSize(getContext(),
+                        } else if (GridPreferences.KEY_GRID_ROW_SIZE.equals(key)) {
+                            mRowSize = mDensity * GridPreferences.getGridRowSize(getContext(),
                                     getResources().getInteger(R.integer.default_row_size));
                             invalidate();
-                        } else if (PreferenceUtils.KEY_GRID_LINE_COLOR.equals(key)) {
+                        } else if (GridPreferences.KEY_GRID_LINE_COLOR.equals(key)) {
                             mGridPaint.setColor(ColorUtils.getGridLineColor(getContext()));
                             invalidate();
-                        } else if (PreferenceUtils.KEY_KEYLINE_COLOR.equals(key)) {
+                        } else if (GridPreferences.KEY_KEYLINE_COLOR.equals(key)) {
                             mKeylinePaint.setColor(ColorUtils.getKeylineColor(getContext()));
                             invalidate();
-                        } else if (PreferenceUtils.KEY_USE_CUSTOM_GRID_SIZE.equals(key)) {
-                            boolean useCustom = PreferenceUtils.getUseCustomGridSize(getContext(),
+                        } else if (GridPreferences.KEY_USE_CUSTOM_GRID_SIZE.equals(key)) {
+                            boolean useCustom = GridPreferences.getUseCustomGridSize(getContext(),
                                     false);
                             int defColumnSize = getResources().getInteger(
                                     R.integer.default_column_size);
                             int defRowSize = getResources().getInteger(R.integer.default_row_size);
-                            mColumnSize = mDensity * (!useCustom ? defColumnSize : PreferenceUtils
+                            mColumnSize = mDensity * (!useCustom ? defColumnSize : GridPreferences
                                     .getGridColumnSize(getContext(), defColumnSize));
-                            mRowSize = mDensity * (!useCustom ? defRowSize : PreferenceUtils
+                            mRowSize = mDensity * (!useCustom ? defRowSize : GridPreferences
                                     .getGridRowSize(getContext(), defRowSize));
                             invalidate();
                         }

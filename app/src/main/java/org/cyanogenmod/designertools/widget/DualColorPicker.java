@@ -8,12 +8,11 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Region;
 import android.util.AttributeSet;
 import android.view.View;
 
 import org.cyanogenmod.designertools.R;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
 
 public class DualColorPicker extends View {
     private static final float STROKE_WIDTH = 5f;
@@ -40,11 +39,11 @@ public class DualColorPicker extends View {
         super(context, attrs, defStyleAttr, defStyleRes);
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.DualColorPicker, 0, 0);
         int primaryColor = ta.getColor(R.styleable.DualColorPicker_primaryColor,
-                PreferenceUtils.getGridLineColor(context, getResources()
-                .getColor(R.color.dualColorPickerDefaultPrimaryColor)));
+                GridPreferences.getGridLineColor(context,
+                        context.getColor(R.color.dualColorPickerDefaultPrimaryColor)));
         int secondaryColor = ta.getColor(R.styleable.DualColorPicker_primaryColor,
-                PreferenceUtils.getKeylineColor(context, getResources()
-                .getColor(R.color.dualColorPickerDefaultSecondaryColor)));
+                GridPreferences.getKeylineColor(context,
+                        context.getColor(R.color.dualColorPickerDefaultSecondaryColor)));
 
         mPrimaryFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         mPrimaryFillPaint.setStyle(Paint.Style.FILL);
@@ -75,18 +74,22 @@ public class DualColorPicker extends View {
         canvas.drawColor(0);
 
         // draw the left half
-        canvas.clipRect(0, 0, widthDiv2, height, Region.Op.REPLACE);
+        canvas.save();
+        canvas.clipRect(0, 0, widthDiv2, height);
         canvas.drawCircle(widthDiv2, heightDiv2, radius, mPrimaryFillPaint);
         canvas.drawCircle(widthDiv2, heightDiv2, radius, mPrimaryStrokePaint);
         canvas.drawLine(widthDiv2 - STROKE_WIDTH / 2f, heightDiv2 - radius,
                 widthDiv2 - STROKE_WIDTH / 2f, heightDiv2 + radius, mPrimaryStrokePaint);
+        canvas.restore();
 
         /// draw the right half
-        canvas.clipRect(widthDiv2, 0, width, height, Region.Op.REPLACE);
+        canvas.save();
+        canvas.clipRect(widthDiv2, 0, width, height);
         canvas.drawCircle(widthDiv2, heightDiv2, radius, mSecondaryFillPaint);
         canvas.drawCircle(widthDiv2, heightDiv2, radius, mSecondaryStrokePaint);
         canvas.drawLine(widthDiv2 + STROKE_WIDTH / 2f, heightDiv2 - radius,
                 widthDiv2 + STROKE_WIDTH / 2f, heightDiv2 + radius, mSecondaryStrokePaint);
+        canvas.restore();
     }
 
     private int getDarkenedColor(int color) {

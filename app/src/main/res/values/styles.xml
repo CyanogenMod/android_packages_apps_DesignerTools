@@ -17,15 +17,14 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="android:colorPrimary">@color/colorPrimary</item>
-        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/textColorSecondary</item>
         <item name="android:windowLightStatusBar">true</item>
-
     </style>
 
     <style name="AppTheme.Credits" >
@@ -36,22 +35,24 @@
     </style>
 
     <style name="AppTheme.GridOverlayCard">
-        <item name="android:colorAccent">@color/colorGridOverlayAccent</item>
+        <item name="colorAccent">@color/colorGridOverlayAccent</item>
     </style>
 
     <style name="AppTheme.MockupOverlayCard">
-        <item name="android:colorAccent">@color/colorMockupOverlayAccent</item>
+        <item name="colorAccent">@color/colorMockupOverlayAccent</item>
     </style>
 
     <style name="AppTheme.ColorPickerCard">
-        <item name="android:colorAccent">@color/colorColorPickerAccent</item>
+        <item name="colorAccent">@color/colorColorPickerAccent</item>
     </style>
 
     <style name="AppTheme.ScreenshotCard">
-        <item name="android:colorAccent">@color/colorScreenshotAccent</item>
+        <item name="colorAccent">@color/colorScreenshotAccent</item>
     </style>
 
-    <style name="AppDialog" parent="@android:style/Theme.Material.Light.Dialog.NoActionBar" />
+    <style name="AppDialog" parent="@style/Theme.AppCompat.Light.Dialog" />
+
+    <style name="AlertDialog" parent="@style/Theme.AppCompat.Light.Dialog.Alert" />
 
     <style name="ScreenshotInfoSubHeading">
         <item name="android:textSize">12sp</item>
@@ -63,8 +64,11 @@
         <item name="android:textColor">#ffffff</item>
     </style>
 
-    <style name="TransparentTheme" parent="@android:style/Theme.Translucent.NoTitleBar">
-
+    <style name="TransparentTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <declare-styleable name="DualColorPicker">

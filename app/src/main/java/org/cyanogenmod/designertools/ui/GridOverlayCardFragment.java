@@ -32,10 +32,10 @@ import android.widget.SeekBar;
 
 import org.cyanogenmod.designertools.R;
 
-import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.utils.ColorUtils;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
 import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.GridPreferences;
 import org.cyanogenmod.designertools.widget.DualColorPicker;
 import org.cyanogenmod.designertools.widget.GridPreview;
 
@@ -61,23 +61,23 @@ public class GridOverlayCardFragment extends DesignerToolCardFragment
                 context.getColor(R.color.colorGridOverlayCardTint)));
 
         View v = inflater.inflate(R.layout.grid_overlay_content, mCardContent, true);
-        mIncludeKeylines = (CheckBox) v.findViewById(R.id.include_keylines);
-        mIncudeCustomGrid = (CheckBox) v.findViewById(R.id.include_custom_grid_size);
-        mColumnSizer = (SeekBar) v.findViewById(R.id.column_sizer);
-        mColumnSizer.setProgress((PreferenceUtils.getGridColumnSize(getContext(), 8) - 4) / 2);
-        mRowSizer = (SeekBar) v.findViewById(R.id.row_sizer);
-        mRowSizer.setProgress((PreferenceUtils.getGridRowSize(getContext(), 8) - 4) / 2);
-        mGridPreview = (GridPreview) v.findViewById(R.id.grid_preview);
-        mGridPreview.setColumnSize(PreferenceUtils.getGridColumnSize(getContext(), 8));
-        mGridPreview.setRowSize(PreferenceUtils.getGridRowSize(getContext(), 8));
+        mIncludeKeylines = v.findViewById(R.id.include_keylines);
+        mIncudeCustomGrid = v.findViewById(R.id.include_custom_grid_size);
+        mColumnSizer = v.findViewById(R.id.column_sizer);
+        mColumnSizer.setProgress((GridPreferences.getGridColumnSize(getContext(), 8) - 4) / 2);
+        mRowSizer = v.findViewById(R.id.row_sizer);
+        mRowSizer.setProgress((GridPreferences.getGridRowSize(getContext(), 8) - 4) / 2);
+        mGridPreview = v.findViewById(R.id.grid_preview);
+        mGridPreview.setColumnSize(GridPreferences.getGridColumnSize(getContext(), 8));
+        mGridPreview.setRowSize(GridPreferences.getGridRowSize(getContext(), 8));
 
         mColumnSizer.setOnSeekBarChangeListener(mSeekBarChangeListener);
         mRowSizer.setOnSeekBarChangeListener(mSeekBarChangeListener);
 
-        mIncludeKeylines.setChecked(PreferenceUtils.getShowKeylines(context, false));
+        mIncludeKeylines.setChecked(GridPreferences.getShowKeylines(context, false));
         mIncludeKeylines.setOnCheckedChangeListener(mCheckChangedListener);
 
-        setIncludeCustomGridLines(PreferenceUtils.getUseCustomGridSize(context, false));
+        setIncludeCustomGridLines(GridPreferences.getUseCustomGridSize(context, false));
         mIncudeCustomGrid.setOnCheckedChangeListener(mCheckChangedListener);
 
         mRowSizer.setOnTouchListener(new View.OnTouchListener() {
@@ -96,7 +96,7 @@ public class GridOverlayCardFragment extends DesignerToolCardFragment
             }
         });
 
-        mDualColorPicker = (DualColorPicker) v.findViewById(R.id.color_picker);
+        mDualColorPicker = v.findViewById(R.id.color_picker);
         mDualColorPicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,14 +131,10 @@ public class GridOverlayCardFragment extends DesignerToolCardFragment
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked == getApplicationContext().getGridOverlayOn()) return;
         if (isChecked) {
-            LaunchUtils.lauchGridOverlayOrPublishTile(getContext(),
-                    PreferenceUtils.getGridOverlayActive(getContext(), false)
-                            ? OnOffTileState.STATE_ON
-                            : OnOffTileState.STATE_OFF);
+            LaunchUtils.launchGridOverlay(getContext());
         } else {
-            LaunchUtils.cancelGridOverlayOrUnpublishTile(getContext());
+            LaunchUtils.cancelGridOverlay(getContext());
         }
     }
 
@@ -153,12 +149,12 @@ public class GridOverlayCardFragment extends DesignerToolCardFragment
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (buttonView == mIncludeKeylines) {
-                PreferenceUtils.setShowKeylines(getContext(), isChecked);
+                GridPreferences.setShowKeylines(getContext(), isChecked);
             } else if (buttonView == mIncudeCustomGrid){
-                PreferenceUtils.setUseCustomGridSize(getContext(), isChecked);
+                GridPreferences.setUseCustomGridSize(getContext(), isChecked);
                 if (isChecked) {
-                    PreferenceUtils.setGridColumnSize(getContext(), mGridPreview.getColumnSize());
-                    PreferenceUtils.setGridRowSize(getContext(), mGridPreview.getRowSize());
+                    GridPreferences.setGridColumnSize(getContext(), mGridPreview.getColumnSize());
+                    GridPreferences.setGridRowSize(getContext(), mGridPreview.getRowSize());
                 }
                 mColumnSizer.setEnabled(isChecked);
                 mRowSizer.setEnabled(isChecked);
@@ -172,10 +168,10 @@ public class GridOverlayCardFragment extends DesignerToolCardFragment
             int size = 4 + progress * 2;
             if (seekBar == mColumnSizer) {
                 mGridPreview.setColumnSize(size);
-                PreferenceUtils.setGridColumnSize(getContext(), size);
+                GridPreferences.setGridColumnSize(getContext(), size);
             } else if (seekBar == mRowSizer) {
                 mGridPreview.setRowSize(size);
-                PreferenceUtils.setGridRowSize(getContext(), size);
+                GridPreferences.setGridRowSize(getContext(), size);
             }
         }
 
@@ -188,17 +184,15 @@ public class GridOverlayCardFragment extends DesignerToolCardFragment
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (PreferenceUtils.KEY_GRID_LINE_COLOR.equals(key)) {
+        if (GridPreferences.KEY_GRID_LINE_COLOR.equals(key)) {
             mDualColorPicker.setPrimaryColor(ColorUtils.getGridLineColor(getContext()));
-        } else if(PreferenceUtils.KEY_KEYLINE_COLOR.equals(key)) {
+        } else if(GridPreferences.KEY_KEYLINE_COLOR.equals(key)) {
             mDualColorPicker.setSecondaryColor(ColorUtils.getKeylineColor(getContext()));
         }
     }
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-
-        }
+        public void onReceive(Context context, Intent intent) {}
     };
 }

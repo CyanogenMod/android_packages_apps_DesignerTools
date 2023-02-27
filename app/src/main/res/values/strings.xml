@@ -17,7 +17,7 @@
     <string name="app_name">Designer Tools</string>
 
     <string name="header_title_grid_overlay">Grid overlay</string>
-    <string name="header_summary_grid_overlay">On-screen grids help you check your layouts for misaligned elements and inconsistent spacing across your app. Cycle between 8dp, 4dp text baseline, and a custom size of your choice.</string>
+    <string name="header_summary_grid_overlay">On-screen grids help you check your layouts for misaligned elements and inconsistent spacing across your app. Use the default 8dp grid or a custom size of your choice.</string>
 
     <string name="header_title_mockup_overlay">Mockup overlay</string>
     <string name="header_summary_mockup_overlay">Overlaying a mockup gives you a live preview of the screen layout as you’re working.</string>
@@ -76,4 +76,17 @@
 
     <string name="color_copied_to_clipboard">Color value copied to clipboard</string>
 
+    <string name="dialog_request_file_permission_title">File Access Required</string>
+    <string name="dialog_request_file_permission_message">
+        This feature requires \'All files access\' in order to write screenshot info.\n\nWould you like to enable this now?
+    </string>
+    <string name="dialog_request_file_permission_grant">Let\'s go!</string>
+    <string name="dialog_request_file_permission_deny">No thanks</string>
+
+    <string name="dialog_request_overlay_permission_title">Display over other apps</string>
+    <string name="dialog_request_overlay_permission_message">
+        This feature requires permission to display over other apps.\n\nWould you like to enable this now?
+    </string>
+    <string name="dialog_request_overlay_permission_grant">Let\'s go!</string>
+    <string name="dialog_request_overlay_permission_deny">No thanks</string>
 </resources>

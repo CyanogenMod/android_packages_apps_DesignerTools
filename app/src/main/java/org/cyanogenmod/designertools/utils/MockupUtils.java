@@ -19,6 +19,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import org.cyanogenmod.designertools.utils.PreferenceUtils.MockPreferences;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -57,18 +59,18 @@ public class MockupUtils {
         if (bmp != null) {
             ImageUtils.saveBitmap(bmp, path + File.separator + fileName);
             if (PORTRAIT_MOCKUP_FILENAME.equals(fileName)) {
-                PreferenceUtils.setPortraitMocupkOverlay(context, filePath);
+                MockPreferences.setPortraitMocupkOverlay(context, filePath);
             } else if (LANDSCAPE_MOCKUP_FILENAME.equals(fileName)) {
-                PreferenceUtils.setLandscapeMocupkOverlay(context, filePath);
+                MockPreferences.setLandscapeMocupkOverlay(context, filePath);
             }
         } else {
             if (PORTRAIT_MOCKUP_FILENAME.equals(fileName)) {
                 if (new File(filePath).delete()) {
-                    PreferenceUtils.setPortraitMocupkOverlay(context, "");
+                    MockPreferences.setPortraitMocupkOverlay(context, "");
                 }
             } else if (LANDSCAPE_MOCKUP_FILENAME.equals(fileName)) {
                 if (new File(filePath).delete()) {
-                    PreferenceUtils.setLandscapeMocupkOverlay(context, "");
+                    MockPreferences.setLandscapeMocupkOverlay(context, "");
                 }
             }
         }

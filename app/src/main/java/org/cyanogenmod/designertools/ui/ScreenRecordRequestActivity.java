@@ -22,7 +22,7 @@ import android.os.Bundle;
 
 import org.cyanogenmod.designertools.DesignerToolsApplication;
 import org.cyanogenmod.designertools.overlays.ColorPickerOverlay;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
+import org.cyanogenmod.designertools.utils.PreferenceUtils.ColorPickerPreferences;
 
 public class ScreenRecordRequestActivity extends Activity {
     @Override
@@ -39,7 +39,7 @@ public class ScreenRecordRequestActivity extends Activity {
                     resultCode, data);
             Intent newIntent = new Intent(this, ColorPickerOverlay.class);
             this.startService(newIntent);
-            PreferenceUtils.setColorPickerActive(this, true);
+            ColorPickerPreferences.setColorPickerActive(this, true);
         }
         finish();
     }

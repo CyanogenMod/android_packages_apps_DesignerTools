@@ -25,9 +25,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
 import org.cyanogenmod.designertools.R;
-import org.cyanogenmod.designertools.qs.OnOffTileState;
 import org.cyanogenmod.designertools.utils.LaunchUtils;
-import org.cyanogenmod.designertools.utils.PreferenceUtils;
 
 public class ColorPickerCardFragment extends DesignerToolCardFragment {
     private static final int REQUEST_OVERLAY_PERMISSION = 0x42;
@@ -40,7 +38,7 @@ public class ColorPickerCardFragment extends DesignerToolCardFragment {
         setTitleSummary(R.string.header_summary_color_picker);
         setIconResource(R.drawable.ic_qs_colorpicker_on);
         base.setBackgroundTintList(ColorStateList.valueOf(
-                getResources().getColor(R.color.colorColorPickerCardTint)));
+                getActivity().getColor(R.color.colorColorPickerCardTint)));
 
         return base;
     }
@@ -78,14 +76,14 @@ public class ColorPickerCardFragment extends DesignerToolCardFragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    private void isEnabled() {
+    }
+
     private void enableFeature(boolean enable) {
         if (enable) {
-            LaunchUtils.lauchColorPickerOrPublishTile(getContext(),
-                    PreferenceUtils.getColorPickerActive(getContext(), false)
-                            ? OnOffTileState.STATE_ON
-                            : OnOffTileState.STATE_OFF);
+            LaunchUtils.launchColorPickerOverlay(getContext());
         } else {
-            LaunchUtils.cancelColorPickerOrUnpublishTile(getContext());
+            LaunchUtils.cancelColorPickerOverlay(getContext());
         }
     }
 }

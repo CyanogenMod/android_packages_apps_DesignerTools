@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.cyanogenmod.designertools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="cyanogenmod.permission.PUBLISH_CUSTOM_TILE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".DesignerToolsApplication"
@@ -14,15 +18,20 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.DesignerToolsActivity">
+        <activity
+            android:name=".ui.DesignerToolsActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <meta-data android:name="android.app.shortcuts"
+                android:resource="@xml/app_shortcuts" />
         </activity>
 
         <activity android:name=".ui.ScreenRecordRequestActivity"
@@ -39,23 +48,10 @@
             android:theme="@style/AppTheme.Credits"
             android:screenOrientation="portrait" />
 
-        <receiver android:name=".qs.GridQuickSettingsTile$ClickBroadcastReceiver">
-            <intent-filter>
-                <action android:name="org.cyanogenmod.designertools.action.TOGGLE_GRID_STATE" />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".qs.MockQuickSettingsTile$ClickBroadcastReceiver">
-            <intent-filter>
-                <action android:name="org.cyanogenmod.designertools.action.TOGGLE_MOCK_STATE" />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".qs.ColorPickerQuickSettingsTile$ClickBroadcastReceiver">
-            <intent-filter>
-                <action android:name="org.cyanogenmod.designertools.action.TOGGLE_COLOR_PICKER_STATE" />
-            </intent-filter>
-        </receiver>
+        <activity android:name=".ui.AppShortcutsActivity"
+            android:theme="@style/TransparentTheme"
+            android:exported="false"
+            android:excludeFromRecents="true" />
 
         <receiver
             android:name=".receiver.BootReceiver"
@@ -70,7 +66,9 @@
 
         <service android:name=".overlays.MockOverlay" />
 
-        <service android:name=".overlays.ColorPickerOverlay" />
+        <service
+            android:name=".overlays.ColorPickerOverlay"
+            android:foregroundServiceType="mediaProjection" />
 
         <service android:name=".service.ScreenshotInfoService" />
 
@@ -80,6 +78,7 @@
             android:name=".service.qs.GridOverlayTileService"
             android:icon="@drawable/ic_qs_grid_off"
             android:label="@string/grid_qs_tile_label"
+            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -90,6 +89,7 @@
             android:name=".service.qs.MockOverlayTileService"
             android:icon="@drawable/ic_qs_overlay_off"
             android:label="@string/mock_qs_tile_label"
+            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -100,6 +100,7 @@
             android:name=".service.qs.ColorPickerTileService"
             android:icon="@drawable/ic_qs_colorpicker_off"
             android:label="@string/color_picker_qs_tile_label"
+            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />

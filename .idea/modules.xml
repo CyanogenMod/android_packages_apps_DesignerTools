@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DesignerTools.iml" filepath="$PROJECT_DIR$/DesignerTools.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/DesignerTools.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/DesignerTools.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/DesignerTools.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/DesignerTools.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/DesignerTools.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/DesignerTools.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/DesignerTools.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/DesignerTools.app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/clark.DesignerTools.iml" filepath="$PROJECT_DIR$/.idea/modules/clark.DesignerTools.iml" />
     </modules>
   </component>
 </project>

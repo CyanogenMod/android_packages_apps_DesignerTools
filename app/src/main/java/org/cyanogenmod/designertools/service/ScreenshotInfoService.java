@@ -16,13 +16,16 @@
 package org.cyanogenmod.designertools.service;
 
 import android.app.IntentService;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -35,11 +38,10 @@ import org.cyanogenmod.designertools.utils.LaunchUtils;
 import org.cyanogenmod.designertools.utils.LayoutRenderUtils;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
@@ -51,7 +53,7 @@ public class ScreenshotInfoService extends IntentService {
     private static final String TAG = ScreenshotInfoService.class.getSimpleName();
     private static final String FILENAME_PROC_VERSION = "/proc/version";
 
-    public static final String EXTRA_PATH = "path";
+    public static final String EXTRA_URI = "uri";
 
     public ScreenshotInfoService() {
         super("ScreenshotInfoService");
@@ -59,40 +61,42 @@ public class ScreenshotInfoService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (intent.hasExtra(EXTRA_PATH)) {
-            File screenshot = new File(intent.getStringExtra(EXTRA_PATH));
-            Bitmap paneBmp = getInfoPane(screenshot);
-            Bitmap screenshotBmp = BitmapFactory.decodeFile(screenshot.getAbsolutePath());
-            try {
-                saveModifiedScreenshot(screenshotBmp, paneBmp, screenshot.getAbsolutePath());
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+        if (intent != null && intent.hasExtra((EXTRA_URI))) {
+            Uri uri = intent.getParcelableExtra(EXTRA_URI);
+            ContentResolver resolver = getApplicationContext()
+                    .getContentResolver();
+            try (InputStream stream = resolver.openInputStream(uri)) {
+                Bitmap paneBmp = getInfoPane();
+                Bitmap screenshotBmp = BitmapFactory.decodeStream(stream);
+                saveModifiedScreenshot(screenshotBmp, paneBmp, uri);
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to store screenshot info", e);
             }
         }
     }
 
-    private Bitmap getInfoPane(File screenshot) {
-        Date date = new Date(screenshot.lastModified());
+    private Bitmap getInfoPane() {
+        Date date = new Date();
         String dateTime = String.format("%s at %s", DateFormat.getDateInstance().format(date),
                 DateFormat.getTimeInstance().format(date));
         String device = Build.MODEL;
         String codeName = Build.DEVICE;
-        String build = getCmVersionString(this);
+        String build = Build.ID;
         String density = getDensityString();
         String kernelVersion = getFormattedKernelVersion();
 
         View pane = View.inflate(this, R.layout.screenshot_info, null);
-        TextView tv = (TextView) pane.findViewById(R.id.date_time_info);
+        TextView tv = pane.findViewById(R.id.date_time_info);
         tv.setText(dateTime);
-        tv = (TextView) pane.findViewById(R.id.device_name);
+        tv = pane.findViewById(R.id.device_name);
         tv.setText(device);
-        tv = (TextView) pane.findViewById(R.id.code_name);
+        tv = pane.findViewById(R.id.code_name);
         tv.setText(codeName);
-        tv = (TextView) pane.findViewById(R.id.build);
+        tv = pane.findViewById(R.id.build);
         tv.setText(build);
-        tv = (TextView) pane.findViewById(R.id.density);
+        tv = pane.findViewById(R.id.density);
         tv.setText(density);
-        tv = (TextView) pane.findViewById(R.id.kernel);
+        tv = pane.findViewById(R.id.kernel);
         tv.setText(kernelVersion);
 
         return LayoutRenderUtils.renderViewToBitmap(pane);
@@ -158,7 +162,7 @@ public class ScreenshotInfoService extends IntentService {
                     "IO Exception when getting kernel version for Device Info screen",
                     e);
 
-            return "Unavailable";
+            return "";
         }
     }
 
@@ -179,56 +183,42 @@ public class ScreenshotInfoService extends IntentService {
         Matcher m = Pattern.compile(PROC_VERSION_REGEX).matcher(rawKernelVersion);
         if (!m.matches()) {
             Log.e(TAG, "Regex did not match on /proc/version: " + rawKernelVersion);
-            return "Unavailable";
+            return "";
         } else if (m.groupCount() < 4) {
             Log.e(TAG, "Regex match on /proc/version only returned " + m.groupCount()
                     + " groups");
-            return "Unavailable";
+            return "";
         }
         return m.group(1) + "\n" +                 // 3.0.31-g6fb96c9
                 m.group(2) + " " + m.group(3) + "\n" + // x@y.com #1
                 m.group(4);                            // Thu Jun 28 11:02:39 PDT 2012
     }
 
-    private void saveModifiedScreenshot(Bitmap screenshot, Bitmap infoPane, String filePath)
-            throws FileNotFoundException {
+    private void saveModifiedScreenshot(Bitmap screenshot, Bitmap infoPane, Uri uri)
+            throws IOException {
+        ContentResolver resolver = getApplicationContext().getContentResolver();
+        ParcelFileDescriptor pfd = resolver.openFileDescriptor(uri, "w");
+
+        WindowManager wm = getSystemService(WindowManager.class);
+        Point size = new Point();
+        wm.getDefaultDisplay().getRealSize(size);
+        if (screenshot.getWidth() != size.x || screenshot.getHeight() != size.y) {
+            Log.d(TAG, "Not adding info, screenshot too large");
+            return;
+        }
+
         Bitmap newBmp = Bitmap.createBitmap(screenshot.getWidth() + infoPane.getWidth(),
                 screenshot.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(newBmp);
         canvas.drawColor(getColor(R.color.screenshot_info_background_color));
         canvas.drawBitmap(screenshot, 0, 0, null);
-        screenshot.recycle();
         canvas.drawBitmap(infoPane, screenshot.getWidth(), 0, null);
+        screenshot.recycle();
         infoPane.recycle();
-        newBmp.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(filePath));
-        newBmp.recycle();
-    }
-
-    private String getCmVersionString(Context context) {
-        if (LaunchUtils.isCyanogenMod(context)) {
-            ClassLoader cl = context.getClassLoader();
-            Class SystemProperties = null;
-            try {
-                SystemProperties = cl.loadClass("android.os.SystemProperties");
-                //Parameters Types
-                Class[] paramTypes = new Class[1];
-                paramTypes[0] = String.class;
-
-                Method get = SystemProperties.getMethod("get", paramTypes);
-
-                //Parameters
-                Object[] params = new Object[1];
-                params[0] = "ro.cm.version";
-
-                return (String) get.invoke(SystemProperties, params);
-            } catch (ClassNotFoundException |
-                    NoSuchMethodException |
-                    IllegalAccessException |
-                    InvocationTargetException e) {
-            /* don't care, will fallback to Build.ID */
-            }
+        if (pfd != null) {
+            newBmp.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(pfd.getFileDescriptor()));
+            pfd.close();
         }
-
-        return Build.ID;
+        newBmp.recycle();
     }
 }

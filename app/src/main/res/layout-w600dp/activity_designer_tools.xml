@@ -33,7 +33,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginBottom="8dp"
             android:textSize="16sp"
-            android:text="@string/qs_section_text"/>
+            android:text="@string/overlays_section_text"/>
 
         <LinearLayout
             android:layout_width="match_parent"
